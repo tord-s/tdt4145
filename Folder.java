@@ -3,8 +3,8 @@ import java.sql.*;
 public class Folder extends ActiveDomainObject {
 	private int folderID;
 	private String courseCode;
-	private String Name;
-	private int ParentID;
+	private String name;
+	private int parentID;
 	
 	public Folder(int folderID, String courseCode) {
 		this.folderID = folderID;
@@ -19,8 +19,7 @@ public class Folder extends ActiveDomainObject {
 					.executeQuery("SELECT Name, ParentID FROM Folder WHERE folderID=" + folderID + " AND courseCode=" + courseCode);
 			while (rs.next()) {
 				name = rs.getString("Name");
-				term = rs.getString("Term");
-				allowAnonymous = rs.getInt("AllowAnonymous");
+				parentID = rs.getInt("ParentID");
 			}
 		} catch (Exception e) {
 			System.out.println("db error during initialization of Folder " + folderID + ", " + courseCode);

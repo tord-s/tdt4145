@@ -1,7 +1,4 @@
-package application.ados;
-
 import java.sql.*;
-import application.ActiveDomainObject;
 
 public class Folder extends ActiveDomainObject {
 	private int folderID;

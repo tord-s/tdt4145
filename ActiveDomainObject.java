@@ -1,5 +1,3 @@
-package application;
-
 import java.sql.*;
 
 public abstract class ActiveDomainObject {

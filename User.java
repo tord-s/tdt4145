@@ -1,7 +1,4 @@
-package application.ados;
-
 import java.sql.*;
-import application.ActiveDomainObject;
 
 public class User extends ActiveDomainObject {
 	private String email;

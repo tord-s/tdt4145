@@ -1,8 +1,4 @@
-package application.ados;
-
 import java.sql.*;
-
-import application.ActiveDomainObject;
 
 public class Course extends ActiveDomainObject {
 	private String courseCode;

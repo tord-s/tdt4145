@@ -56,6 +56,22 @@ public class Course extends ActiveDomainObject {
 			System.out.println("db error during saving of Course " + courseCode);
 		}
 	}
+
+	public static LinkedList<String> getCoursesForUser(MainCtrl mainCtrl) {
+		LinkedList<String> result = new LinkedList<String>();
+		try {
+			String query = "SELECT CourseCode FROM UserInCourse WHERE Email=(?)";
+			PreparedStatement st = mainCtrl.conn.prepareStatement(query);
+			st.setString(1, mainCtrl.getUserEmail());
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				result.add(rs.getString("CourseCode"));
+			}
+		} catch (Exception e) {
+			System.out.println("db error during initialization of Courses for User " +  mainCtrl.getUserEmail());
+		}
+		return result;
+	}
 	
 	/**
 	 * Checks if course has student

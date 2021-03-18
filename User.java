@@ -19,8 +19,10 @@ public class User extends ActiveDomainObject {
 	public void initialize(Connection conn) {
 		try {
 			// Initialize name and password
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT Name, Password FROM User WHERE Email=" + email);
+			String query = "SELECT Name, Password FROM User WHERE Email=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, email);
+			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				name = rs.getString("Name");
 				password = rs.getString("Password");
@@ -42,6 +44,9 @@ public class User extends ActiveDomainObject {
 	}
 
 	public boolean checkPassword(String p) {
+		if (password == null) {
+			return false;
+		}
 		return password.equals(p);
 	}
 	

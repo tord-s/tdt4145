@@ -11,7 +11,7 @@ public abstract class DBConn {
 			p.put("user", "root");
 			p.put("password", "toor");
 			conn = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/prosjekt?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false", p);
+					"jdbc:mysql://localhost:3306/prosjekt?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false&serverTimezone=UTC", p);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to connect", e);
 		}

@@ -18,6 +18,7 @@ public class User extends ActiveDomainObject {
 	@Override
 	public void initialize(Connection conn) {
 		try {
+			// Initialize name and password
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT Name, Password FROM User WHERE Email=" + email);
 			while (rs.next()) {

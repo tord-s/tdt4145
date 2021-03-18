@@ -6,7 +6,7 @@ public class Course extends ActiveDomainObject {
 	private String name;
 	private String term;
 	private int allowAnonymous;
-	private LinkedList<Folder> folders = new LinkedList<>();
+	private LinkedList<Integer> folderIDs = new LinkedList<>();
 
 	public Course(String courseCode) {
 		this.courseCode = courseCode;
@@ -22,6 +22,7 @@ public class Course extends ActiveDomainObject {
 	@Override
 	public void initialize(Connection conn) {
 		try {
+			// Initialize name, term and allowAnonymous
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt
 					.executeQuery("SELECT Name, Term, AllowAnonymous FROM Course WHERE CourseCode=" + courseCode);
@@ -29,6 +30,12 @@ public class Course extends ActiveDomainObject {
 				name = rs.getString("Name");
 				term = rs.getString("Term");
 				allowAnonymous = rs.getInt("AllowAnonymous");
+			}
+			// Initialize folderIDs
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery("SELECT FolderID FROM Folder WHERE CourseCode=" + courseCode);
+			while (rs.next()) {
+				folderIDs.add(rs.getInt("FolderID"));
 			}
 		} catch (Exception e) {
 			System.out.println("db error during initialization of Course " + courseCode);

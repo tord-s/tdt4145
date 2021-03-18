@@ -5,5 +5,5 @@ public class MainCtrl extends DBConn {
 	private String courseCode; // Active course
 	private String folderID; // Active folder
 	
-	public save
+	
 }

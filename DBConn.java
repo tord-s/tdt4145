@@ -11,13 +11,13 @@ public abstract class DBConn {
 			p.put("user", "root");
 			p.put("password", "toor");
 			conn = DriverManager.getConnection(
-					"jdbc:mysql://localhost/prosjekt?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false", p);
+					"jdbc:mysql://localhost:3306/prosjekt?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false", p);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to connect", e);
 		}
 	}
 	
-	public void closeConnection() {
+	public void disconnect() {
 		try {
 			conn.close();
 		} catch (Exception e) {

@@ -1,12 +1,15 @@
 import java.sql.*;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Course extends ActiveDomainObject {
 	private String courseCode;
 	private String name;
 	private String term;
 	private int allowAnonymous;
-	private LinkedList<Integer> folderIDs = new LinkedList<>();
+	private List<Integer> folderIDs = new LinkedList<>();
+	private List<String> studentEmails = new LinkedList<>(); // TO-DO: INITIALIZE!
+	private List<String> instructorEmails = new LinkedList<>(); //TO-DO: INITIALIZE! 
 
 	public Course(String courseCode) {
 		this.courseCode = courseCode;
@@ -54,8 +57,44 @@ public class Course extends ActiveDomainObject {
 		}
 	}
 	
+	/**
+	 * Checks if course has student
+	 * @param studentEmail Email of student
+	 * @return A boolean that is true if course has student
+	 */
+	public boolean hasStudent(String studentEmail) {
+		boolean result = false;
+		for (String email : studentEmails) {
+			if (email.equals(studentEmail)) {
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Checks if course has instructor
+	 * @param studentEmail Email of instructor
+	 * @return A boolean that is true if course has instructor
+	 */
+	public boolean hasInstructor(String instructorEmail) {
+		boolean result = false;
+		for (String email : instructorEmails) {
+			if (email.equals(instructorEmail)) {
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
+	
 	public String getCourseCode() {
 		return courseCode;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public String getTerm() {

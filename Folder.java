@@ -1,19 +1,22 @@
 import java.sql.*;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Folder extends ActiveDomainObject {
 	private int folderID;
 	private String courseCode;
 	private String name;
 	private int parentID;
-	private LinkedList<Integer> threadIDs = new LinkedList<>();
+	private List<Integer> threadIDs = new LinkedList<>();
 	
 	public Folder(int folderID, String courseCode) {
 		this.folderID = folderID;
 		this.courseCode = courseCode;
 	}
 	
-	public Folder(String name, int parentID) {
+	public Folder(int folderID, String courseCode, String name, int parentID) {
+		this.folderID = folderID;
+		this.courseCode = courseCode;
 		this.name = name;
 		this.parentID = parentID;
 	}
@@ -49,6 +52,26 @@ public class Folder extends ActiveDomainObject {
 		} catch (Exception e) {
 			System.out.println("db error during saving of Folder " + folderID + ", " + courseCode);
 		}
+	}
+	
+	public int getFolderID() {
+		return folderID;
+	}
+	
+	public String getCourseCode() {
+		return courseCode;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int getParentID() {
+		return parentID;
+	}
+	
+	public List<Integer> getThreadIDs() {
+		return threadIDs;
 	}
 
 }

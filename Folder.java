@@ -1,14 +1,21 @@
 import java.sql.*;
+import java.util.LinkedList;
 
 public class Folder extends ActiveDomainObject {
 	private int folderID;
 	private String courseCode;
 	private String name;
 	private int parentID;
+	private LinkedList<Thread> threads = new LinkedList<>();
 	
 	public Folder(int folderID, String courseCode) {
 		this.folderID = folderID;
 		this.courseCode = courseCode;
+	}
+	
+	public Folder(String name, int parentID) {
+		this.name = name;
+		this.parentID = parentID;
 	}
 	
 	@Override
@@ -21,6 +28,8 @@ public class Folder extends ActiveDomainObject {
 				name = rs.getString("Name");
 				parentID = rs.getInt("ParentID");
 			}
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery("");
 		} catch (Exception e) {
 			System.out.println("db error during initialization of Folder " + folderID + ", " + courseCode);
 		}
@@ -28,8 +37,13 @@ public class Folder extends ActiveDomainObject {
 
 	@Override
 	public void save(Connection conn) {
-		// TODO Auto-generated method stub
-		
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate("INSERT INTO Folder VALUES (" + folderID + ", " + courseCode + ", " + name
+					+ ", " + parentID + ") ON DUPLICATE KEY UPDATE Name=" + name + ", ParentID=" + parentID);
+		} catch (Exception e) {
+			System.out.println("db error during saving of Folder " + folderID + ", " + courseCode);
+		}
 	}
 
 }

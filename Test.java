@@ -23,6 +23,6 @@ public class Test extends DBConn {
 		Test test1 = new Test();
 		test1.connect();
 		test1.showTables();
-		test1.closeConnection();
+		test1.disconnect();
 	}
 }

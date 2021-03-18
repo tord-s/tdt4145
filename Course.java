@@ -1,15 +1,24 @@
 import java.sql.*;
+import java.util.LinkedList;
 
 public class Course extends ActiveDomainObject {
 	private String courseCode;
 	private String name;
 	private String term;
 	private int allowAnonymous;
+	private LinkedList<Folder> folders = new LinkedList<>();
 
 	public Course(String courseCode) {
 		this.courseCode = courseCode;
 	}
-
+	
+	public Course(String courseCode, String name, String term, int allowAnonymous) {
+		this.courseCode = courseCode;
+		this.name = name;
+		this.term = term;
+		this.allowAnonymous = allowAnonymous;
+	}
+	
 	@Override
 	public void initialize(Connection conn) {
 		try {

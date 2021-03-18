@@ -8,6 +8,12 @@ public class User extends ActiveDomainObject {
 	public User(String email) {
 		this.email = email;
 	}
+	
+	public User(String email, String name, String password) {
+		this.email = email;
+		this.name = name;
+		this.password = password;
+	}
 
 	@Override
 	public void initialize(Connection conn) {

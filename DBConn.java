@@ -2,7 +2,7 @@ import java.sql.*;
 import java.util.Properties;
 
 public abstract class DBConn {
-	protected Connection conn;
+	private Connection conn;
 
 	public void connect() {
 		try {

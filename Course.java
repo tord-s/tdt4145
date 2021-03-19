@@ -67,8 +67,8 @@ public class Course extends ActiveDomainObject {
 		}
 	}
 
-	public static LinkedList<String> getCoursesForUser(MainCtrl mainCtrl) {
-		LinkedList<String> result = new LinkedList<String>();
+	/*public static List<String> getCoursesForUser(MainCtrl mainCtrl) {
+		List<String> result = new LinkedList<String>();
 		try {
 			String query = "SELECT CourseCode FROM UserInCourse WHERE Email=(?)";
 			PreparedStatement st = mainCtrl.conn.prepareStatement(query);
@@ -81,7 +81,7 @@ public class Course extends ActiveDomainObject {
 			System.out.println("db error during initialization of Courses for User " +  mainCtrl.getUserEmail());
 		}
 		return result;
-	}
+	}*/
 	
 	/**
 	 * Checks if course has student
@@ -131,11 +131,12 @@ public class Course extends ActiveDomainObject {
 		return allowAnonymous;
 	}
 
-	public LinkedList<String> getFolders(MainCtrl mainCtrl) {
-		LinkedList<String> result = new LinkedList<String>();
+	// Endret denne fra å ha MainCtrl som parameter til å ha en Connection for å være mer konsekvent
+	public List<String> getFolders(Connection conn) {
+		List<String> result = new LinkedList<String>();
 		try {
 			String query = "SELECT Name, FolderID FROM Folder WHERE CourseCode=(?)";
-			PreparedStatement st = mainCtrl.conn.prepareStatement(query);
+			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, courseCode);
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {

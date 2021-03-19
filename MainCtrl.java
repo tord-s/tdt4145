@@ -152,15 +152,21 @@ public class MainCtrl implements Runnable {
 
 	@Override
 	public void run() {
+		// Connect to database
 		connect();
+		// Welcome user and create a Scanner for input
 		System.out.println("\nWelcome to our Piazza-ish application");
 		Scanner sc = new Scanner(System.in);
+		// Log in
 		boolean successfull_login = logIn(sc);
 		while (!successfull_login) {
 			successfull_login = logIn(sc);
 		}
+		// Course and Folder selection
 		selectCourseAndFolder(sc);
+		// Done
 		sc.close();
+		disconnect();
 	}
 
 	public static void main(String[] args) {

@@ -16,7 +16,8 @@ public class MainCtrl implements Runnable {
 	// return sc.nextLine();
 	// }
 
-	// FLYTTET connect() OG disconnect() FRA DBConn HIT ETTERSOM VI ANTAGELIGVIS IKKE TRENGER FLERE CONNECTOR-KLASSER UANSETT
+	// FLYTTET connect() OG disconnect() FRA DBConn HIT ETTERSOM VI ANTAGELIGVIS
+	// IKKE TRENGER FLERE CONNECTOR-KLASSER UANSETT
 	/**
 	 * Initializes the conn field as a Connection to a database
 	 */
@@ -58,7 +59,9 @@ public class MainCtrl implements Runnable {
 
 	// GJORDE DENNE IKKE-STATISK
 	/**
-	 * Asks a user for input of email and password and logs in the user if these match
+	 * Asks a user for input of email and password and logs in the user if these
+	 * match
+	 * 
 	 * @param sc For taking input from console
 	 * @return True if email and password match
 	 */
@@ -85,9 +88,11 @@ public class MainCtrl implements Runnable {
 	}
 
 	// FLYTTET DENNE FRA COURSE TIL HER.
-	// FØLER DETTE GIR MER MENING ETTERSOM METODEN UANSETT TRENGER ET MainCtrl OBJEKT FOR HENTING AV CONN
+	// FØLER DETTE GIR MER MENING ETTERSOM METODEN UANSETT TRENGER ET MainCtrl
+	// OBJEKT FOR HENTING AV CONN
 	/**
 	 * Finds all courses that the user participates in
+	 * 
 	 * @return A List of course codes
 	 */
 	public List<String> getCoursesForUser() {
@@ -170,10 +175,18 @@ public class MainCtrl implements Runnable {
 	}
 
 	public static void main(String[] args) {
+		// HAR GENERELT GJORT HELE KODEN MINDRE STATISK OG MER OBJEKTORIENTERT. SYNTES
+		// DETTE ER RYDDIGERE. ÅPEN FOR MOTARGUMENTER.
+		//
+		// PRØV OGSÅ GJERNE SÅ GODT MAN KAN Å SKRIVE KOMMENTARER UNDERVEIS I KODEN.
+		// DETTE GJØR DET LETTERE Å LESE, SAMT REDIGERE. I TILLEGG SER JEG FOR MEG AT
+		// DET VIL VÆRE ET PLUSS VED INNLEVERING.
+
 		MainCtrl mainCtrl = new MainCtrl();
 		mainCtrl.run();
 
-		// FLYTTET DETTE INN I EN EGEN run() METODE I MainCtrl FOR MER RYDDIGHET OG OVERSIKT I KODEN
+		// FLYTTET DETTE INN I EN EGEN run() METODE I MainCtrl FOR MER RYDDIGHET OG
+		// OVERSIKT I KODEN
 		/*
 		 * mainCtrl.connect();
 		 * System.out.println("\nWelcome to our Piazza-ish application"); Scanner sc =

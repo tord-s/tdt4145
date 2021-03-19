@@ -140,7 +140,8 @@ public class Course extends ActiveDomainObject {
 		return allowAnonymous;
 	}
 
-	// ENDRET DENNE FRA Å HA MainCtrl SOM PARAMETER TIL Å HA EN Connection FOR Å VÆRE MER KONSEKVENT I KODEN
+	// ENDRET DENNE FRA Å HA MainCtrl SOM PARAMETER TIL Å HA EN Connection FOR Å
+	// VÆRE MER KONSEKVENT I KODEN
 	public List<String> getFolders(Connection conn) {
 		List<String> result = new LinkedList<String>();
 		try {

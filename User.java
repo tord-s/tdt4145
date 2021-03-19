@@ -5,10 +5,22 @@ public class User extends ActiveDomainObject {
 	private String name;
 	private String password;
 
+	/**
+	 * Constructor for a user in the database
+	 * 
+	 * @param email Primary key
+	 */
 	public User(String email) {
 		this.email = email;
 	}
-	
+
+	/**
+	 * Constructor for a user not in the database
+	 * 
+	 * @param email    Primary key
+	 * @param name
+	 * @param password
+	 */
 	public User(String email, String name, String password) {
 		this.email = email;
 		this.name = name;
@@ -43,17 +55,23 @@ public class User extends ActiveDomainObject {
 		}
 	}
 
+	/**
+	 * Checks if a given password matches users password
+	 * 
+	 * @param p Given password
+	 * @return True if password matches
+	 */
 	public boolean checkPassword(String p) {
 		if (password == null) {
 			return false;
 		}
 		return password.equals(p);
 	}
-	
+
 	public String getEmail() {
 		return email;
 	}
-	
+
 	public String getName() {
 		return name;
 	}

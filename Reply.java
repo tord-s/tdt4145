@@ -7,18 +7,20 @@ public class Reply extends ActiveDomainObject {
 	private int threadID;
 	private String courseCode;
 	private String type;
-	
+
 	/**
-	 * Constructor for Reply based on primary key
-	 * @param replyID
+	 * Constructor for a reply in the database
+	 * 
+	 * @param replyID Primary key
 	 */
 	public Reply(int replyID) {
 		this.replyID = replyID;
 	}
-	
+
 	/**
-	 * Constructor for 
-	 * @param replyID
+	 * Constructor for a reply not in the database
+	 * 
+	 * @param replyID    Primary key
 	 * @param email
 	 * @param content
 	 * @param threadID
@@ -33,13 +35,15 @@ public class Reply extends ActiveDomainObject {
 		this.courseCode = courseCode;
 		this.type = type;
 	}
-	
+
 	@Override
 	public void initialize(Connection conn) {
 		try {
 			// Initialize email, content, threadID, courseCode and type
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT Email, Content, ThreadID, CourseCode, Type FROM Reply WHERE ReplyID=" + replyID);
+			String query = "SELECT Email, Content, ThreadID, CourseCode, Type FROM Reply WHERE ReplyID=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setInt(1, replyID);
+			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				email = rs.getString("Email");
 				content = rs.getString("Content");
@@ -56,34 +60,34 @@ public class Reply extends ActiveDomainObject {
 	public void save(Connection conn) {
 		try {
 			Statement stmt = conn.createStatement();
-			stmt.executeUpdate("INSERT INTO Reply VALUES (" + replyID+ ", " + email + ", " + content + ", "
-					+ threadID + ", " + courseCode + ", " + type + ") ON DUPLICATE KEY UPDATE Email=" + email + ", Content=" + content + ", ThreadID=" + threadID
-					+ ", CourseCode=" + courseCode + ", Type=" + type);
+			stmt.executeUpdate("INSERT INTO Reply VALUES (" + replyID + ", " + email + ", " + content + ", " + threadID
+					+ ", " + courseCode + ", " + type + ") ON DUPLICATE KEY UPDATE Email=" + email + ", Content="
+					+ content + ", ThreadID=" + threadID + ", CourseCode=" + courseCode + ", Type=" + type);
 		} catch (Exception e) {
 			System.out.println("db error during saving of Reply " + replyID);
 		}
 	}
-	
+
 	public int getReplyID() {
 		return replyID;
 	}
-	
+
 	public String getEmail() {
 		return email;
 	}
-	
+
 	public String getContent() {
 		return content;
 	}
-	
+
 	public int getThreadID() {
 		return threadID;
 	}
-	
+
 	public String getCourseCode() {
 		return courseCode;
 	}
-	
+
 	public String getType() {
 		return type;
 	}

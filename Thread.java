@@ -9,11 +9,28 @@ public class Thread extends ActiveDomainObject {
 	private int studAnsID; // ReplyID of type "StudentsAnswer"
 	private int instAnsID; // ReplyID of type "InstructorsAnswer"
 
+	/**
+	 * Constructor for a thread in the database
+	 * 
+	 * @param threadID   Part of primary key
+	 * @param courseCode Part of primary key
+	 */
 	public Thread(int threadID, String courseCode) {
 		this.threadID = threadID;
 		this.courseCode = courseCode;
 	}
 
+	/**
+	 * Constructor for a thread not in the database
+	 * 
+	 * @param threadID   Part of primary key
+	 * @param courseCode Part of primary key
+	 * @param content
+	 * @param email
+	 * @param folderID
+	 * @param studAnsID
+	 * @param instAnsID
+	 */
 	public Thread(int threadID, String courseCode, String content, String email, int folderID, int studAnsID,
 			int instAnsID) {
 		this.threadID = threadID;
@@ -29,16 +46,28 @@ public class Thread extends ActiveDomainObject {
 	public void initialize(Connection conn) {
 		try {
 			// Initialize content, email and folderID
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT Content, Email, FolderID FROM Thread WHERE ThreadID=" + threadID
-					+ " AND CourseCode=" + courseCode);
+			String query = "SELECT Content, Email, FolderID FROM Thread WHERE ThreadID=(?) AND CourseCode=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setInt(1, threadID);
+			st.setString(2, courseCode);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				content = rs.getString("Content");
+				email = rs.getString("Email");
+				folderID = rs.getInt("FolderID");
+			}
 			// Initialize studAnsID and instAnsID
-			PreparedStatement pstmt = conn
-					.prepareStatement("SELECT ReplyID FROM Reply WHERE ThreadID =" + threadID + " AND Type=?");
-			pstmt.setString(1, "StudentsAnswer");
-			studAnsID = pstmt.executeQuery().getInt("ReplyID");
-			pstmt.setString(1, "InstructorsAnswer");
-			instAnsID = pstmt.executeQuery().getInt("ReplyID");
+			query = "SELECT ReplyID FROM Reply WHERE ThreadID=(?) AND Type=(?)";
+			st = conn.prepareStatement(query);
+			st.setInt(1, threadID);
+			st.setString(2, "StudentsAnswer");
+			studAnsID = st.executeQuery().getInt("ReplyID");
+			/*
+			 * st = conn.prepareStatement(query); // Usikker på om dette trengs st.setInt(1,
+			 * threadID);
+			 */
+			st.setString(2, "InstructorsAnswer");
+			instAnsID = st.executeQuery().getInt("ReplyID");
 		} catch (Exception e) {
 			System.out.println("db error during initialization of Thread " + threadID + ", " + courseCode);
 		}
@@ -74,5 +103,13 @@ public class Thread extends ActiveDomainObject {
 
 	public int getFolderID() {
 		return folderID;
+	}
+
+	public int getStudAnsID() {
+		return studAnsID;
+	}
+
+	public int getInstAnsID() {
+		return instAnsID;
 	}
 }

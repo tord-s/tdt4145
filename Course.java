@@ -9,12 +9,25 @@ public class Course extends ActiveDomainObject {
 	private int allowAnonymous;
 	private List<Integer> folderIDs = new LinkedList<>();
 	private List<String> studentEmails = new LinkedList<>(); // TO-DO: INITIALIZE!
-	private List<String> instructorEmails = new LinkedList<>(); //TO-DO: INITIALIZE! 
+	private List<String> instructorEmails = new LinkedList<>(); // TO-DO: INITIALIZE!
 
+	/**
+	 * Constructor for a in-database course
+	 * 
+	 * @param courseCode Primary key
+	 */
 	public Course(String courseCode) {
 		this.courseCode = courseCode;
 	}
-	
+
+	/**
+	 * Constructor for a not-in-database course
+	 * 
+	 * @param courseCode     Primary key
+	 * @param name
+	 * @param term
+	 * @param allowAnonymous
+	 */
 	public Course(String courseCode, String name, String term, int allowAnonymous) {
 		this.courseCode = courseCode;
 		this.name = name;
@@ -22,17 +35,16 @@ public class Course extends ActiveDomainObject {
 		this.allowAnonymous = allowAnonymous;
 	}
 
-	// How to use prepeared statements:	
+	// How to use prepeared statements:
 	// String query = "SELECT Name FROM Folder WHERE CourseCode=(?)";
 	// PreparedStatement st = mainCtrl.conn.prepareStatement(query);
 	// st.setString(1, courseCode);
 	// ResultSet rs = st.executeQuery();
-	
+
 	@Override
 	public void initialize(Connection conn) {
 		try {
 			// Initialize name, term and allowAnonymous
-			Statement stmt = conn.createStatement();
 			String query = "SELECT Name, Term, AllowAnonymous FROM Course WHERE CourseCode=(?)";
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, courseCode);
@@ -67,26 +79,22 @@ public class Course extends ActiveDomainObject {
 		}
 	}
 
-	/*public static List<String> getCoursesForUser(MainCtrl mainCtrl) {
-		List<String> result = new LinkedList<String>();
-		try {
-			String query = "SELECT CourseCode FROM UserInCourse WHERE Email=(?)";
-			PreparedStatement st = mainCtrl.conn.prepareStatement(query);
-			st.setString(1, mainCtrl.getUserEmail());
-			ResultSet rs = st.executeQuery();
-			while (rs.next()) {
-				result.add(rs.getString("CourseCode"));
-			}
-		} catch (Exception e) {
-			System.out.println("db error during initialization of Courses for User " +  mainCtrl.getUserEmail());
-		}
-		return result;
-	}*/
-	
+	/*
+	 * public static List<String> getCoursesForUser(MainCtrl mainCtrl) {
+	 * List<String> result = new LinkedList<String>(); try { String query =
+	 * "SELECT CourseCode FROM UserInCourse WHERE Email=(?)"; PreparedStatement st =
+	 * mainCtrl.conn.prepareStatement(query); st.setString(1,
+	 * mainCtrl.getUserEmail()); ResultSet rs = st.executeQuery(); while (rs.next())
+	 * { result.add(rs.getString("CourseCode")); } } catch (Exception e) {
+	 * System.out.println("db error during initialization of Courses for User " +
+	 * mainCtrl.getUserEmail()); } return result; }
+	 */
+
 	/**
 	 * Checks if course has student
+	 * 
 	 * @param studentEmail Email of student
-	 * @return A boolean that is true if course has student
+	 * @return True if course has student
 	 */
 	public boolean hasStudent(String studentEmail) {
 		boolean result = false;
@@ -98,11 +106,12 @@ public class Course extends ActiveDomainObject {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Checks if course has instructor
+	 * 
 	 * @param studentEmail Email of instructor
-	 * @return A boolean that is true if course has instructor
+	 * @return True if course has instructor
 	 */
 	public boolean hasInstructor(String instructorEmail) {
 		boolean result = false;
@@ -114,24 +123,25 @@ public class Course extends ActiveDomainObject {
 		}
 		return result;
 	}
-	
+
 	public String getCourseCode() {
 		return courseCode;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getTerm() {
 		return term;
 	}
-	
+
 	public int allowsAnonymous() {
 		return allowAnonymous;
 	}
 
-	// Endret denne fra å ha MainCtrl som parameter til å ha en Connection for å være mer konsekvent
+	// Endret denne fra å ha MainCtrl som parameter til å ha en Connection for å
+	// være mer konsekvent
 	public List<String> getFolders(Connection conn) {
 		List<String> result = new LinkedList<String>();
 		try {

@@ -21,22 +21,32 @@ public class Course extends ActiveDomainObject {
 		this.term = term;
 		this.allowAnonymous = allowAnonymous;
 	}
+
+	// How to use prepeared statements:	
+	// String query = "SELECT Name FROM Folder WHERE CourseCode=(?)";
+	// PreparedStatement st = mainCtrl.conn.prepareStatement(query);
+	// st.setString(1, courseCode);
+	// ResultSet rs = st.executeQuery();
 	
 	@Override
 	public void initialize(Connection conn) {
 		try {
 			// Initialize name, term and allowAnonymous
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT Name, Term, AllowAnonymous FROM Course WHERE CourseCode=" + courseCode);
+			String query = "SELECT Name, Term, AllowAnonymous FROM Course WHERE CourseCode=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, courseCode);
+			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				name = rs.getString("Name");
 				term = rs.getString("Term");
 				allowAnonymous = rs.getInt("AllowAnonymous");
 			}
 			// Initialize folderIDs
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery("SELECT FolderID FROM Folder WHERE CourseCode=" + courseCode);
+			query = "SELECT FolderID FROM Folder WHERE CourseCode=(?)";
+			st = conn.prepareStatement(query);
+			st.setString(1, courseCode);
+			rs = st.executeQuery();
 			while (rs.next()) {
 				folderIDs.add(rs.getInt("FolderID"));
 			}
@@ -119,6 +129,22 @@ public class Course extends ActiveDomainObject {
 	
 	public int allowsAnonymous() {
 		return allowAnonymous;
+	}
+
+	public LinkedList<String> getFolders(MainCtrl mainCtrl) {
+		LinkedList<String> result = new LinkedList<String>();
+		try {
+			String query = "SELECT Name, FolderID FROM Folder WHERE CourseCode=(?)";
+			PreparedStatement st = mainCtrl.conn.prepareStatement(query);
+			st.setString(1, courseCode);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				result.add("ID: " + rs.getString("FolderID") + " Name: " + rs.getString("Name"));
+			}
+		} catch (Exception e) {
+			System.out.println("db error during initialization of Folders for Course " + courseCode);
+		}
+		return result;
 	}
 
 }

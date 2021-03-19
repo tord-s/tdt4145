@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class MainCtrl extends DBConn {
 	private String userEmail; // Active user
 	private String courseCode; // Active course
-	private String folderID; // Active folder
+	private Integer folderID; // Active folder
 	
 	// public String userInput(String consoleMessage) {
 	// 	Scanner sc = new Scanner(System.in);
@@ -33,6 +33,27 @@ public class MainCtrl extends DBConn {
 		}
 	}
 
+	private static void selectCourseAndFolder(MainCtrl mainCtrl,Scanner sc) {
+		LinkedList<String> courses = Course.getCoursesForUser(mainCtrl);
+		System.out.println("\nYou are following these courses");
+		for (String i : courses) {
+			System.out.println(i);
+		  }
+		System.out.println("\nPlease write course code of course you want to view");
+		System.out.print("Course code:");
+		mainCtrl.courseCode = sc.nextLine();
+		Course course = new Course(mainCtrl.courseCode);
+		course.initialize(mainCtrl.conn);
+		LinkedList<String> folders = course.getFolders(mainCtrl);
+		System.out.println("\nCourse has following folders:");
+		for (String i : folders) {
+			System.out.println(i);
+			}
+		System.out.println("\nPlease write ID of folder you want to view");
+		System.out.print("ID:");
+		mainCtrl.folderID = Integer.parseInt(sc.nextLine());
+		course.initialize(mainCtrl.conn);
+	}
 	public static void main(String[] args) {
 		MainCtrl mainCtrl = new MainCtrl();
 		mainCtrl.connect();
@@ -42,12 +63,7 @@ public class MainCtrl extends DBConn {
 		while (!successfull_login) {
 			successfull_login = logIn(sc, mainCtrl);
 		}
-		LinkedList<String> courses = new LinkedList<String>();
-		courses = Course.getCoursesForUser(mainCtrl);
-		System.out.println("\nYou are following these courses");
-		for (String i : courses) {
-			System.out.println(i);
-		  }
+		selectCourseAndFolder(mainCtrl, sc);
 		sc.close();
 	}
 

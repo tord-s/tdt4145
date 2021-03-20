@@ -47,9 +47,14 @@ public class User extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			Statement stmt = conn.createStatement();
-			stmt.executeUpdate("INSERT INTO User VALUES (" + email + ", " + name + ", " + password
-					+ ") ON DUPLICATE KEY UPDATE Name=" + name + ", Password=" + password);
+			String query = "INSERT INTO Course VALUES ((?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), Password(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, email);
+			st.setString(2, name);
+			st.setString(3, password);
+			st.setString(4, name);
+			st.setString(5, password);
+			st.execute();
 		} catch (Exception e) {
 			System.out.println("db error during saving of User " + email);
 		}

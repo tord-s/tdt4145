@@ -59,10 +59,20 @@ public class Reply extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			Statement stmt = conn.createStatement();
-			stmt.executeUpdate("INSERT INTO Reply VALUES (" + replyID + ", " + email + ", " + content + ", " + threadID
-					+ ", " + courseCode + ", " + type + ") ON DUPLICATE KEY UPDATE Email=" + email + ", Content="
-					+ content + ", ThreadID=" + threadID + ", CourseCode=" + courseCode + ", Type=" + type);
+			String query = "INSERT INTO Reply VALUES ((?), (?), (?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Email=(?), Content=(?), ThreadID=(?), CourseCode=(?), Type=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setInt(1, replyID);
+			st.setString(2, email);
+			st.setString(3, content);
+			st.setInt(4, threadID);
+			st.setString(5, courseCode);
+			st.setString(6, type);
+			st.setString(7, email);
+			st.setString(8, content);
+			st.setInt(9, threadID);
+			st.setString(10, courseCode);
+			st.setString(11, type);
+			st.execute();
 		} catch (Exception e) {
 			System.out.println("db error during saving of Reply " + replyID);
 		}

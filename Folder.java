@@ -48,7 +48,7 @@ public class Folder extends ActiveDomainObject {
 				name = rs.getString("Name");
 				parentID = rs.getInt("ParentID");
 			}
-			
+
 			// Initialize threadIDs
 			query = "SELECT ThreadID FROM Thread WHERE FolderID=(?) AND CourseCode=(?)";
 			st = conn.prepareStatement(query);
@@ -66,14 +66,20 @@ public class Folder extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			Statement stmt = conn.createStatement();
-			stmt.executeUpdate("INSERT INTO Folder VALUES (" + folderID + ", " + courseCode + ", " + name + ", "
-					+ parentID + ") ON DUPLICATE KEY UPDATE Name=" + name + ", ParentID=" + parentID);
+			String query = "INSERT INTO Folder VALUES ((?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), ParentID=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setInt(1, folderID);
+			st.setString(2, courseCode);
+			st.setString(3, name);
+			st.setInt(4, parentID);
+			st.setString(5, name);
+			st.setInt(6, parentID);
+			st.execute();
 		} catch (Exception e) {
 			System.out.println("db error during saving of Folder " + folderID + ", " + courseCode);
 		}
 	}
-	
+
 	public List<String> viewThreads(Connection conn) {
 		List<String> result = new LinkedList<>();
 		try {

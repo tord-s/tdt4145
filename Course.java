@@ -71,10 +71,16 @@ public class Course extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			Statement stmt = conn.createStatement();
-			stmt.executeUpdate("INSERT INTO Course VALUES (" + courseCode + ", " + name + ", " + term + ", "
-					+ allowAnonymous + ") ON DUPLICATE KEY UPDATE Name=" + name + ", Term=" + term + ", AllowAnonymous="
-					+ allowAnonymous);
+			String query = "INSERT INTO Course VALUES ((?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), Term=(?), AllowAnonymous=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, courseCode);
+			st.setString(2, name);
+			st.setString(3, term);
+			st.setInt(4, allowAnonymous);
+			st.setString(5, name);
+			st.setString(6, term);
+			st.setInt(7, allowAnonymous);
+			st.execute();
 		} catch (Exception e) {
 			System.out.println("db error during saving of Course " + courseCode);
 		}

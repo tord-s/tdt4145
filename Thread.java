@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Thread extends ActiveDomainObject {
 	private int threadID;
@@ -8,6 +10,7 @@ public class Thread extends ActiveDomainObject {
 	private int folderID;
 	private int studAnsID; // ReplyID of type "StudentsAnswer"
 	private int instAnsID; // ReplyID of type "InstructorsAnswer"
+	private List<String> tags = new LinkedList<>();
 
 	/**
 	 * Constructor for a thread in the database
@@ -32,7 +35,7 @@ public class Thread extends ActiveDomainObject {
 	 * @param instAnsID
 	 */
 	public Thread(int threadID, String courseCode, String content, String email, int folderID, int studAnsID,
-			int instAnsID) {
+			int instAnsID, List<String> tags) {
 		this.threadID = threadID;
 		this.courseCode = courseCode;
 		this.content = content;
@@ -40,6 +43,7 @@ public class Thread extends ActiveDomainObject {
 		this.folderID = folderID;
 		this.studAnsID = studAnsID;
 		this.instAnsID = instAnsID;
+		this.tags = tags;
 	}
 
 	@Override
@@ -58,17 +62,30 @@ public class Thread extends ActiveDomainObject {
 			}
 			
 			// Initialize studAnsID and instAnsID
-			query = "SELECT ReplyID FROM Reply WHERE ThreadID=(?) AND Type=(?)";
+			query = "SELECT ReplyID FROM Reply WHERE ThreadID=(?) AND CourseCode=(?) AND Type=(?)";
 			st = conn.prepareStatement(query);
 			st.setInt(1, threadID);
-			st.setString(2, "StudentsAnswer");
+			st.setString(2, courseCode);
+			st.setString(3, "StudentsAnswer");
 			studAnsID = st.executeQuery().getInt("ReplyID");
 			/*
-			 * st = conn.prepareStatement(query); // Usikker på om dette trengs st.setInt(1,
-			 * threadID);
+			 * st = conn.prepareStatement(query); // Usikker på om dette trengs 
+			 * st.setInt(1,threadID);
+			 * st.setString(2, courseCode);
 			 */
-			st.setString(2, "InstructorsAnswer");
+			st.setString(3, "InstructorsAnswer");
 			instAnsID = st.executeQuery().getInt("ReplyID");
+			
+			// Initialize tags
+			query = "SELECT Tag FROM ThreadTags WHERE ThreadID=(?) AND CourseCode=(?)";
+			st = conn.prepareStatement(query);
+			st.setInt(1, threadID);
+			st.setString(2, courseCode);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				tags.add(rs.getString("Tag"));
+			}
+			
 		} catch (Exception e) {
 			System.out.println("db error during initialization of Thread " + threadID + ", " + courseCode);
 		}
@@ -77,10 +94,29 @@ public class Thread extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			Statement stmt = conn.createStatement();
-			stmt.executeUpdate("INSERT INTO Thread VALUES (" + threadID + ", " + courseCode + ", " + content + ", "
-					+ email + ", " + folderID + ") ON DUPLICATE KEY UPDATE Content=" + content + ", Email=" + email
-					+ ", FolderID=" + folderID);
+			String query = "INSERT INTO Course VALUES ((?), (?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Content=(?), Email=(?), FolderID=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setInt(1, threadID);
+			st.setString(2, courseCode);
+			st.setString(3, content);
+			st.setString(4, email);
+			st.setInt(5, folderID);
+			st.setString(6, content);
+			st.setString(7, email);
+			st.setInt(8, folderID);
+			st.execute();
+			
+			// Save tags
+			query = "INSERT INTO ThreadTags VALUES((?), (?), (?))";
+			st = conn.prepareStatement(query);
+			st.setInt(1, threadID);
+			st.setString(2, courseCode);
+			for (String tag : tags) {
+				/*st.setInt(1, threadID); // VET IKKE OM DETTE TRENGS
+				st.setString(2, courseCode);*/
+				st.setString(3, tag);
+				st.execute();
+			}
 		} catch (Exception e) {
 			System.out.println("db error during saving of Thread " + threadID + ", " + courseCode);
 		}

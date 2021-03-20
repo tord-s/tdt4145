@@ -72,6 +72,22 @@ public class Folder extends ActiveDomainObject {
 			System.out.println("db error during saving of Folder " + folderID + ", " + courseCode);
 		}
 	}
+	
+	public List<String> viewThreads(Connection conn) {
+		List<String> result = new LinkedList<>();
+		try {
+			String query = "SELECT ThreadID, Email FROM Thread WHERE CourseCode=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, courseCode);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				result.add("ID: " + rs.getString("ThreadID") + " User: " + rs.getString("Email"));
+			}
+		} catch (Exception e) {
+			System.out.println("db error while getting Folders for Course " + courseCode);
+		}
+		return result;
+	}
 
 	public int getFolderID() {
 		return folderID;

@@ -8,7 +8,9 @@ public class MainCtrl implements Runnable {
 	private String userEmail; // Active user
 	private String courseCode; // Active course
 	private int folderID; // Active folder
+	private int threadID; // Active thread
 	private Connection conn;
+	private Scanner sc;
 
 	// public String userInput(String consoleMessage) {
 	// Scanner sc = new Scanner(System.in);
@@ -21,7 +23,7 @@ public class MainCtrl implements Runnable {
 	/**
 	 * Initializes the conn field as a Connection to a database
 	 */
-	public void connect() {
+	private void connect() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Properties p = new Properties();
@@ -38,7 +40,7 @@ public class MainCtrl implements Runnable {
 	/**
 	 * Closes the Connection conn
 	 */
-	public void disconnect() {
+	private void disconnect() {
 		try {
 			conn.close();
 		} catch (Exception e) {
@@ -65,7 +67,7 @@ public class MainCtrl implements Runnable {
 	 * @param sc For taking input from console
 	 * @return True if email and password match
 	 */
-	private boolean logIn(Scanner sc) {
+	private boolean logIn() {
 		// Take user input of email and password
 		System.out.print("Email:");
 		String email = sc.nextLine();
@@ -95,7 +97,7 @@ public class MainCtrl implements Runnable {
 	 * 
 	 * @return A List of course codes
 	 */
-	public List<String> getCoursesForUser() {
+	private List<String> viewCoursesForUser() {
 		List<String> result = new LinkedList<>();
 		try {
 			String query = "SELECT CourseCode FROM UserInCourse WHERE Email=(?)";
@@ -127,13 +129,13 @@ public class MainCtrl implements Runnable {
 	 * course.initialize(mainCtrl.conn); }
 	 */
 
-	// GJORDE DENNE METODEN IKKE-STATISK
-	private void selectCourseAndFolder(Scanner sc) {
+	// GJORDE DENNE METODEN IKKE-STATISK OG SEPARERTE DEN INN I FLERE METODER
+	/*private void selectCourseAndFolder() {
 		// Find and list all accessible courses
-		List<String> courses = getCoursesForUser();
+		List<String> courses = viewCoursesForUser();
 		System.out.println("\nYou are following these courses");
-		for (String i : courses) {
-			System.out.println(i);
+		for (String s : courses) {
+			System.out.println(s);
 		}
 		// Ask for user input on the courseCode of the course to view
 		System.out.println("\nPlease write course code of course you want to view");
@@ -143,16 +145,85 @@ public class MainCtrl implements Runnable {
 		Course course = new Course(courseCode);
 		course.initialize(conn);
 		// Find and list the folders within the course
-		List<String> folders = course.getFolders(conn);
+		List<String> folders = course.viewFolders(conn);
 		System.out.println("\nCourse has following folders:");
-		for (String i : folders) {
-			System.out.println(i);
+		for (String s : folders) {
+			System.out.println(s);
 		}
 		// Ask for user input on the folderID of the folder to view
 		System.out.println("\nPlease write ID of folder you want to view");
 		System.out.print("ID:");
 		folderID = Integer.parseInt(sc.nextLine());
-		course.initialize(conn); // VET IKKE HVA DENNE LINJEN GJØR
+		// Initialize a folder based on input folderID, courseCode
+		Folder folder = new Folder(folderID, courseCode);
+		folder.initialize(conn);
+		// Find and list all Threads in this Folder
+		List<String> threads = folder.viewThreads(conn);
+		System.out.println("\nThreads:");
+		for (String s : threads) {
+			System.out.println(s);
+		}
+	}*/
+	
+	/**
+	 * Lists all available courses for the user and asks for course-selection
+	 */
+	private void courseSelection() {
+		// Find and list all accessible courses
+		List<String> courses = viewCoursesForUser();
+		System.out.println("\nYou are following these courses");
+		for (String s : courses) {
+			System.out.println(s);
+		}
+		// Ask for user input on the courseCode of the course to view
+		System.out.println("\nPlease write course code of the course you want to view");
+		System.out.print("Course code:");
+		courseCode = sc.nextLine();
+	}
+	
+	/**
+	 * Lists all folders in active course and asks for folder-selection
+	 */
+	private void folderSelection() {
+		// Initialize a course based on input courseCode
+		Course course = new Course(courseCode);
+		course.initialize(conn);
+		// Find and list the folders within the course
+		List<String> folders = course.viewFolders(conn);
+		System.out.println("\nCourse has following folders:");
+		for (String s : folders) {
+			System.out.println(s);
+		}
+		// Ask for user input on the folderID of the folder to view
+		System.out.println("\nPlease write ID of the folder you want to view");
+		System.out.print("ID:");
+		folderID = Integer.parseInt(sc.nextLine());
+	}
+	
+	/**
+	 * Lists all threads in active folder and asks for thread-selection
+	 */
+	private void threadSelection() {
+		// Initialize a folder based on input folderID, courseCode
+		Folder folder = new Folder(folderID, courseCode);
+		folder.initialize(conn);
+		// Find and list all Threads in this Folder
+		List<String> threads = folder.viewThreads(conn);
+		System.out.println("\nThreads:");
+		for (String s : threads) {
+			System.out.println(s);
+		}
+		// Asks for user input on the threadID of the thread to view
+		System.out.println("\nPlease write ID of the thread you want to view");
+		System.out.print("ID:");
+		threadID = Integer.parseInt(sc.nextLine());
+	}
+	
+	/**
+	 * Takes user input on posting of a new thread
+	 */
+	private void threadPosting() {
+		// TO-DO!
 	}
 
 	@Override
@@ -161,14 +232,31 @@ public class MainCtrl implements Runnable {
 		connect();
 		// Welcome user and create a Scanner for input
 		System.out.println("\nWelcome to our Piazza-ish application");
-		Scanner sc = new Scanner(System.in);
+		sc = new Scanner(System.in);
 		// Log in
-		boolean successfull_login = logIn(sc);
+		boolean successfull_login = logIn();
 		while (!successfull_login) {
-			successfull_login = logIn(sc);
+			successfull_login = logIn();
 		}
-		// Course and Folder selection
-		selectCourseAndFolder(sc);
+		// User selections
+		courseSelection();
+		folderSelection();
+		System.out.println("\nWrite 'browse' if you would like to browse existing threads or 'post' if you would like to post a new thread");
+		System.out.println("Your input:");
+		String browseOrPost = sc.nextLine();
+		while (true) {
+			if (browseOrPost.equals("browse")) {
+				threadSelection();
+				break;
+			} else if (browseOrPost.equals("post")) {
+				threadPosting();
+				break;
+			}
+			System.out.println("\n'" + browseOrPost + "'" + " is not a valid input");
+			System.out.println("Please try again:");
+			browseOrPost = sc.nextLine();
+		}
+			
 		// Done
 		sc.close();
 		disconnect();

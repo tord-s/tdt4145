@@ -74,7 +74,7 @@ public class Folder extends ActiveDomainObject {
 			st.setInt(4, parentID);
 			st.setString(5, name);
 			st.setInt(6, parentID);
-			st.execute();
+			st.executeUpdate();
 		} catch (Exception e) {
 			System.out.println("db error during saving of Folder " + folderID + ", " + courseCode);
 		}

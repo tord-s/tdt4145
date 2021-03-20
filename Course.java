@@ -7,7 +7,8 @@ public class Course extends ActiveDomainObject {
 	private String name;
 	private String term;
 	private int allowAnonymous;
-	private List<Integer> folderIDs = new LinkedList<>(); // TRENGER VI EGENTLIG DISSE FELTENE?? 
+	private List<Integer> threadIDs = new LinkedList<>(); // TO-DO: INITIALIZE!
+	private List<Integer> folderIDs = new LinkedList<>(); // TRENGER VI EGENTLIG DISSE FELTENE??
 	private List<String> studentEmails = new LinkedList<>(); // TO-DO: INITIALIZE!
 	private List<String> instructorEmails = new LinkedList<>(); // TO-DO: INITIALIZE!
 
@@ -55,6 +56,15 @@ public class Course extends ActiveDomainObject {
 				allowAnonymous = rs.getInt("AllowAnonymous");
 			}
 			
+			// Initialize threadIDs
+			query = "SELECT ThreadID FROM Thread WHERE CourseCode=(?)";
+			st = conn.prepareStatement(query);
+			st.setString(1, courseCode);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				threadIDs.add(rs.getInt("ThreadID"));
+			}
+			
 			// Initialize folderIDs
 			query = "SELECT FolderID FROM Folder WHERE CourseCode=(?)";
 			st = conn.prepareStatement(query);
@@ -63,6 +73,26 @@ public class Course extends ActiveDomainObject {
 			while (rs.next()) {
 				folderIDs.add(rs.getInt("FolderID"));
 			}
+			
+			// Initialize studentEmails
+			query = "SELECT Email FROM UserInCourse WHERE CourseCode=(?) AND Role=(?)";
+			st = conn.prepareStatement(query);
+			st.setString(1, courseCode);
+			st.setString(2, "Student");
+			rs = st.executeQuery();
+			while (rs.next()) {
+				studentEmails.add(rs.getString("Email"));
+			}
+			
+			// Initialize instructorEmails
+			/*st = conn.prepareStatement(query); // VET IKKE OM DETTE TRENGS
+			st.setString(1, courseCode);*/
+			st.setString(2, "Instructor");
+			rs = st.executeQuery();
+			while (rs.next()) {
+				instructorEmails.add(rs.getString("Email"));
+			}
+			
 		} catch (Exception e) {
 			System.out.println("db error during initialization of Course " + courseCode);
 		}
@@ -80,7 +110,7 @@ public class Course extends ActiveDomainObject {
 			st.setString(5, name);
 			st.setString(6, term);
 			st.setInt(7, allowAnonymous);
-			st.execute();
+			st.executeUpdate();
 		} catch (Exception e) {
 			System.out.println("db error during saving of Course " + courseCode);
 		}
@@ -170,5 +200,21 @@ public class Course extends ActiveDomainObject {
 
 	public int allowsAnonymous() {
 		return allowAnonymous;
+	}
+	
+	public List<Integer> getThreadIDs() {
+		return threadIDs;
+	}
+	
+	public List<Integer> getFolderIDs() {
+		return folderIDs;
+	}
+	
+	public List<String> getStudentEmails() {
+		return studentEmails;
+	}
+	
+	public List<String> getInstructorEmails() {
+		return instructorEmails;
 	}
 }

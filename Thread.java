@@ -104,7 +104,7 @@ public class Thread extends ActiveDomainObject {
 			st.setString(6, content);
 			st.setString(7, email);
 			st.setInt(8, folderID);
-			st.execute();
+			st.executeUpdate();
 			
 			// Save tags
 			query = "INSERT INTO ThreadTags VALUES((?), (?), (?))";

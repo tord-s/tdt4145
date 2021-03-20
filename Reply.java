@@ -72,7 +72,7 @@ public class Reply extends ActiveDomainObject {
 			st.setInt(9, threadID);
 			st.setString(10, courseCode);
 			st.setString(11, type);
-			st.execute();
+			st.executeUpdate();
 		} catch (Exception e) {
 			System.out.println("db error during saving of Reply " + replyID);
 		}

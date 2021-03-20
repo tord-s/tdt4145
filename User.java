@@ -54,7 +54,7 @@ public class User extends ActiveDomainObject {
 			st.setString(3, password);
 			st.setString(4, name);
 			st.setString(5, password);
-			st.execute();
+			st.executeUpdate();
 		} catch (Exception e) {
 			System.out.println("db error during saving of User " + email);
 		}

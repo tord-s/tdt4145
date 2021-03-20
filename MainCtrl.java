@@ -10,7 +10,7 @@ public class MainCtrl implements Runnable {
 	private int folderID; // Active folder
 	private int threadID; // Active thread
 	private Connection conn;
-	private Scanner sc;
+	private Scanner sc; // LA INN SCANNEREN SOM ET FELT SLIK AT MAN SLIPPER Å PUTTE DEN SOM ARGUMENT I MANGE METODER
 
 	// public String userInput(String consoleMessage) {
 	// Scanner sc = new Scanner(System.in);
@@ -230,9 +230,53 @@ public class MainCtrl implements Runnable {
 	 * Takes user input on posting of a new thread
 	 */
 	private void threadPosting() {
-		// TO-DO!
+		// Take user input on content
+		System.out.println("\nWrite the content of the new thread here:");
+		String content = sc.nextLine();
+		
+		// Take user input on tags
+		List<String> tags = new LinkedList<>();
+		System.out.println("\nDo you want to add a tag? (y/n)");
+		String addTag = sc.nextLine();
+		while (true) {
+			if (addTag.equals("y") || addTag.equals("yes")) {
+				System.out.println("\nTag:");
+				tags.add(sc.nextLine());
+				System.out.println("\nDo you want to add another tag? (y/n)");
+				addTag = sc.nextLine();
+			} else if (addTag.equals("n") || addTag.equals("no")) {
+				break;
+			} else {
+				System.out.println("\n'" + addTag + "'" + " is not a valid input");
+				System.out.println("Please try again:");
+				addTag = sc.nextLine();
+			}
+		}
+		
+		// Find threadID
+		Course course = new Course(courseCode);
+		course.initialize(conn);
+		List<Integer> threadIDs = course.getThreadIDs();
+		int newID = threadIDs.get(threadIDs.size() - 1) + 1;
+		
+		// LAGRINGEN AV Reply OG Thread UNDER VIRKER IKKE! HAR IKKE FUNNET UT HVORFOR IKKE ENDA...
+		
+		// Create and save two empty replies
+		int studReplyID = (int) (10*Math.random()); // KJØRER DENNE TAKTIKKEN PÅ ReplyID INNTIL VIDERE TENKER JEG
+		int instReplyID = (int) (10*Math.random());
+		new Reply(studReplyID, null, null, newID, courseCode, "StudentsAnswer").save(conn);
+		new Reply(instReplyID, null, null, newID, courseCode, "InstructorsAnswer").save(conn);
+		
+		// Create and save new thread
+		new Thread(newID, courseCode, content, userEmail, folderID, studReplyID, instReplyID, tags).save(conn);
+		
+		// Confirmation for user
+		Folder folder = new Folder(folderID, courseCode);
+		folder.initialize(conn);
+		String folderName = folder.getName();
+		System.out.println("Thread posted to folder " + folderName);
 	}
-
+	
 	@Override
 	public void run() {
 		// Connect to database

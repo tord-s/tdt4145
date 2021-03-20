@@ -48,6 +48,7 @@ public class Folder extends ActiveDomainObject {
 				name = rs.getString("Name");
 				parentID = rs.getInt("ParentID");
 			}
+			
 			// Initialize threadIDs
 			query = "SELECT ThreadID FROM Thread WHERE FolderID=(?) AND CourseCode=(?)";
 			st = conn.prepareStatement(query);

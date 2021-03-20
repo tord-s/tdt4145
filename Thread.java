@@ -56,6 +56,7 @@ public class Thread extends ActiveDomainObject {
 				email = rs.getString("Email");
 				folderID = rs.getInt("FolderID");
 			}
+			
 			// Initialize studAnsID and instAnsID
 			query = "SELECT ReplyID FROM Reply WHERE ThreadID=(?) AND Type=(?)";
 			st = conn.prepareStatement(query);

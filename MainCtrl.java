@@ -73,9 +73,11 @@ public class MainCtrl implements Runnable {
 		String email = sc.nextLine();
 		System.out.print("Password:");
 		String password = sc.nextLine();
+		
 		// Initialize a user based on input email
 		User user = new User(email);
 		user.initialize(conn);
+		
 		// Check if password is correct, and if so, log in user
 		boolean valid_login = user.checkPassword(password);
 		if (valid_login) {
@@ -175,6 +177,7 @@ public class MainCtrl implements Runnable {
 		for (String s : courses) {
 			System.out.println(s);
 		}
+		
 		// Ask for user input on the courseCode of the course to view
 		System.out.println("\nPlease write course code of the course you want to view");
 		System.out.print("Course code:");
@@ -188,12 +191,14 @@ public class MainCtrl implements Runnable {
 		// Initialize a course based on input courseCode
 		Course course = new Course(courseCode);
 		course.initialize(conn);
+		
 		// Find and list the folders within the course
 		List<String> folders = course.viewFolders(conn);
 		System.out.println("\nCourse has following folders:");
 		for (String s : folders) {
 			System.out.println(s);
 		}
+		
 		// Ask for user input on the folderID of the folder to view
 		System.out.println("\nPlease write ID of the folder you want to view");
 		System.out.print("ID:");
@@ -207,12 +212,14 @@ public class MainCtrl implements Runnable {
 		// Initialize a folder based on input folderID, courseCode
 		Folder folder = new Folder(folderID, courseCode);
 		folder.initialize(conn);
+		
 		// Find and list all Threads in this Folder
 		List<String> threads = folder.viewThreads(conn);
 		System.out.println("\nThreads:");
 		for (String s : threads) {
 			System.out.println(s);
 		}
+		
 		// Asks for user input on the threadID of the thread to view
 		System.out.println("\nPlease write ID of the thread you want to view");
 		System.out.print("ID:");
@@ -230,17 +237,22 @@ public class MainCtrl implements Runnable {
 	public void run() {
 		// Connect to database
 		connect();
+		
 		// Welcome user and create a Scanner for input
 		System.out.println("\nWelcome to our Piazza-ish application");
 		sc = new Scanner(System.in);
+		
 		// Log in
 		boolean successfull_login = logIn();
 		while (!successfull_login) {
 			successfull_login = logIn();
 		}
-		// User selections
+		
+		// Selection of course and folder
 		courseSelection();
 		folderSelection();
+		
+		// Get input from user on if they would like to browse or post threads
 		System.out.println("\nWrite 'browse' if you would like to browse existing threads or 'post' if you would like to post a new thread");
 		System.out.println("Your input:");
 		String browseOrPost = sc.nextLine();

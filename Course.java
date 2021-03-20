@@ -54,6 +54,7 @@ public class Course extends ActiveDomainObject {
 				term = rs.getString("Term");
 				allowAnonymous = rs.getInt("AllowAnonymous");
 			}
+			
 			// Initialize folderIDs
 			query = "SELECT FolderID FROM Folder WHERE CourseCode=(?)";
 			st = conn.prepareStatement(query);

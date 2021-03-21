@@ -76,11 +76,9 @@ public class MainCtrl implements Runnable {
 	 */
 	private void courseSelection() {
 		// Find and list all accessible courses
-		List<String> courses = viewCoursesForUser();
-		System.out.println("\nYou are following these courses");
-		for (String s : courses) {
-			System.out.println(s);
-		}
+		User user = new User(userEmail);
+		user.initialize(conn);
+		user.viewCourses(conn);
 		
 		// Ask for user input on the courseCode of the course to view
 		System.out.println("\nPlease write course code of the course you want to view");

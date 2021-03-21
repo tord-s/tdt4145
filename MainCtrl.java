@@ -201,13 +201,12 @@ public class MainCtrl implements Runnable {
 		System.out.println("\nWelcome to our Piazza-ish application");
 		sc = new Scanner(System.in);
 		
-//		// Log in
-//		boolean successfull_login = logIn();
-//		while (!successfull_login) {
-//			successfull_login = logIn();
-//		}
+		// Log in
+		boolean successfull_login = logIn();
+		while (!successfull_login) {
+			successfull_login = logIn();
+		}
 		
-		userEmail = "jakob.torsvik@example.com";
 		// Selection of course and folder
 		courseSelection();
 		folderSelection();

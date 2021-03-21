@@ -47,8 +47,8 @@ public class User extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			String query = "INSERT INTO User VALUES ((?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), Password(?)";
-			PreparedStatement st = conn.prepareStatement(query);
+			String update = "INSERT INTO User VALUES ((?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), Password(?)";
+			PreparedStatement st = conn.prepareStatement(update);
 			st.setString(1, email);
 			st.setString(2, name);
 			st.setString(3, password);
@@ -89,6 +89,21 @@ public class User extends ActiveDomainObject {
 			return false;
 		}
 		return password.equals(p);
+	}
+	
+	public String roleInCourse(String courseCode, Connection conn) {
+		try {
+			String query = "SELECT Role FROM UserInCourse WHERE Email=(?) AND CourseCode=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, email);
+			st.setString(2, courseCode);
+			ResultSet rs = st.executeQuery();
+			rs.next();
+			return rs.getString("Role");
+		} catch (Exception e) {
+			System.out.println("db error while getting role of User " + email + " in Course " + courseCode);
+		}
+		return null;
 	}
 
 	public String getEmail() {

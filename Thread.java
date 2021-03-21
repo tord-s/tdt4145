@@ -90,8 +90,8 @@ public class Thread extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			String query = "INSERT INTO Thread VALUES ((?), (?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Content=(?), Email=(?), FolderID=(?)";
-			PreparedStatement st = conn.prepareStatement(query);
+			String update = "INSERT INTO Thread VALUES ((?), (?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Content=(?), Email=(?), FolderID=(?)";
+			PreparedStatement st = conn.prepareStatement(update);
 			st.setInt(1, threadID);
 			st.setString(2, courseCode);
 			st.setString(3, content);
@@ -103,8 +103,8 @@ public class Thread extends ActiveDomainObject {
 			st.executeUpdate();
 			
 			// Save tags
-			query = "INSERT INTO ThreadTags VALUES((?), (?), (?))";
-			st = conn.prepareStatement(query);
+			update = "INSERT INTO ThreadTags VALUES((?), (?), (?))";
+			st = conn.prepareStatement(update);
 			st.setInt(1, threadID);
 			st.setString(2, courseCode);
 			for (String tag : tags) {
@@ -128,6 +128,7 @@ public class Thread extends ActiveDomainObject {
 				System.out.print(", ");
 			}
 		}
+		System.out.println("\n	Likes: " + countLikes(conn));
 		System.out.println("\n	" + content);
 		
 		// Print out replies
@@ -138,6 +139,23 @@ public class Thread extends ActiveDomainObject {
 		studReply.view();
 		System.out.println();
 		instReply.view();
+	}
+	
+	private int countLikes(Connection conn) {
+		try {
+			String query = "SELECT COUNT(*) AS NumberOfLikes FROM UserReadsThread WHERE ThreadID=(?) AND CourseCode=(?) AND Likes=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setInt(1, threadID);
+			st.setString(2, courseCode);
+			st.setInt(3, 1);
+			ResultSet rs = st.executeQuery();
+			rs.next();
+			return rs.getInt("NumberOfLikes");
+		} catch (Exception e) {
+			System.out.println("db error during counting of likes on Thread " + threadID + ", " + courseCode);
+		}
+		
+		return 0;
 	}
 
 	public int getThreadID() {

@@ -13,7 +13,7 @@ public class MainCtrl implements Runnable {
 	private Scanner sc;
 
 	/**
-	 * Initializes the conn field as a Connection to a database
+	 * Initializes the conn field as a Connection to a specific database
 	 */
 	private void connect() {
 		try {
@@ -49,9 +49,9 @@ public class MainCtrl implements Runnable {
 	 */
 	private boolean logIn() {
 		// Take user input of email and password
-		System.out.print("Email:");
+		System.out.print("Email: ");
 		String email = sc.nextLine();
-		System.out.print("Password:");
+		System.out.print("Password: ");
 		String password = sc.nextLine();
 		
 		// Initialize a user based on input email
@@ -121,21 +121,25 @@ public class MainCtrl implements Runnable {
 	 * Posts a new thread to active folder based on user input
 	 */
 	private void threadPosting() {
-		// Take user input on anonymity
-		System.out.println("\nPost anonymously? (y/n)");
-		System.out.print("Your input: ");
-		String anonymousInput = sc.nextLine();
-		boolean anonymous = true;
-		while (true) {
-			if (anonymousInput.equals("y") || anonymousInput.equals("yes")) {
-				break;
-			} else if (anonymousInput.equals("n") || anonymousInput.equals("no")) {
-				anonymous = false;
-				break;
-			} else {
-				System.out.println(anonymousInput + " is not a valid input.");
-				System.out.print("Please try again: ");
-				anonymousInput = sc.nextLine();
+		// Take user input on anonymity if allowed
+		boolean anonymous = false;
+		Course course = new Course(courseCode);
+		course.initialize(conn);
+		if (course.allowsAnonymous()) {
+			System.out.println("\nPost anonymously? (y/n)");
+			System.out.print("Your input: ");
+			String anonymousInput = sc.nextLine();
+			while (true) {
+				if (anonymousInput.equals("y") || anonymousInput.equals("yes")) {
+					anonymous = true;
+					break;
+				} else if (anonymousInput.equals("n") || anonymousInput.equals("no")) {
+					break;
+				} else {
+					System.out.println(anonymousInput + " is not a valid input.");
+					System.out.print("Please try again: ");
+					anonymousInput = sc.nextLine();
+				}
 			}
 		}
 		
@@ -165,8 +169,6 @@ public class MainCtrl implements Runnable {
 		}
 		
 		// Find threadID of new thread
-		Course course = new Course(courseCode);
-		course.initialize(conn);
 		List<Integer> threadIDs = course.getThreadIDs();
 		int newID = threadIDs.get(threadIDs.size() - 1) + 1;
 		
@@ -190,7 +192,121 @@ public class MainCtrl implements Runnable {
 		System.out.println("\nThread posted to folder " + folderName);
 	}
 	
+	/**
+	 * Registers if the user likes the post and if they would like to leave a reply
+	 */
+	private void userReadsThread() {
+		try {
+			String update = "INSERT INTO UserReadsThread VALUES((?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Likes=(?)";
+			PreparedStatement st = conn.prepareStatement(update);
+			st.setInt(1, threadID);
+			st.setString(2, courseCode);
+			st.setString(3, userEmail);
+			
+			// Take user input on if they like the post
+			System.out.println("\nDo you like this post? (y/n)");
+			System.out.print("Your input: ");
+			String likesPost = sc.nextLine();
+			while (true) {
+				if (likesPost.equals("y") || likesPost.equals("yes")) {
+					st.setInt(4, 1);
+					st.setInt(5, 1);
+					break;
+				} else if (likesPost.equals("n") || likesPost.equals("no")) {
+					st.setInt(4, 0);
+					st.setInt(5, 0);
+					break;
+				} else {
+					System.out.println(likesPost + " is not a valid input");
+					System.out.print("Please try again: ");
+					likesPost = sc.nextLine();
+				}
+			}
+			st.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("db error while reading Thread " + threadID + ", " + courseCode);
+		}
+		
+		// Take user input on if they would like to reply to thread
+		System.out.println("Would you like to reply to this post? (y/n)");
+		System.out.println("Your input: ");
+		String toReply = sc.nextLine();
+		while (true) {
+			if (toReply.equals("y") || toReply.equals("yes")) {
+				replyToThread();
+				break;
+			} else if (toReply.equals("n") || toReply.equals("no")) {
+				break;
+			} else {
+				System.out.println(toReply + "is not a valid input");
+				System.out.print("Please try again: ");
+				toReply = sc.nextLine();
+			}
+		}
+	}
 	
+	private void replyToThread() {
+		// Create and initialize user to get role in course
+		User user = new User(userEmail);
+		user.initialize(conn);
+		String role = user.roleInCourse(courseCode, conn);
+		
+		// Create and initialize thread
+		Thread thread = new Thread(threadID, courseCode);
+		thread.initialize(conn);
+		
+		// Check if the reply corresponding to the users role is already replied to
+		int replyID = 0;
+		if (role.equals("Student")) {
+			replyID = thread.getStudAnsID();
+		} else if (role.equals("Instructor")) {
+			replyID = thread.getInstAnsID();
+		}
+		Reply reply = new Reply(replyID);
+		reply.initialize(conn);
+		
+		// Only continue if thread is not replied to
+		if (reply.getContent() != null) {
+			System.out.println("This thread already has a reply by a(n) " + role);
+			return;
+		} 
+		
+		// Take user input on anonymity if allowed
+		boolean anonymous = false;
+		Course course = new Course(courseCode);
+		course.initialize(conn);
+		if (course.allowsAnonymous()) {
+			System.out.println("\nReply to post anonymously? (y/n)");
+			System.out.print("Your input: ");
+			String anonymousInput = sc.nextLine();
+			while (true) {
+				if (anonymousInput.equals("y") || anonymousInput.equals("yes")) {
+					anonymous = true;
+					break;
+				} else if (anonymousInput.equals("n") || anonymousInput.equals("no")) {
+					break;
+				} else {
+					System.out.println(anonymousInput + " is not a valid input.");
+					System.out.print("Please try again: ");
+					anonymousInput = sc.nextLine();
+				}
+			}
+		}
+		
+		// Take user input on content
+		System.out.println("\nWrite the content of the reply here:");
+		String content = sc.nextLine();
+		
+		// Create and save a new reply
+		try {
+			new Reply(replyID, userEmail, content, threadID, courseCode, role.equals("Student") ? "StudentsAnswer" : "InstructorsAnswer").save(conn);
+		} catch (Exception e) {
+			System.out.println("Error during instantiaion of Reply");
+		}
+		
+		// Confirmation for user
+		System.out.println("Reply given to Thread " + threadID);
+	}
 	
 	@Override
 	public void run() {
@@ -222,6 +338,7 @@ public class MainCtrl implements Runnable {
 				Thread thread = new Thread(threadID, courseCode);
 				thread.initialize(conn);
 				thread.view(conn);
+				userReadsThread();
 				break;
 			} else if (browseOrPost.equals("post")) {
 				threadPosting();

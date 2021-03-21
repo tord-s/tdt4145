@@ -62,8 +62,8 @@ public class Reply extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			String query = "INSERT INTO Reply VALUES ((?), (?), (?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Email=(?), Content=(?), ThreadID=(?), CourseCode=(?), Type=(?)";
-			PreparedStatement st = conn.prepareStatement(query);
+			String update = "INSERT INTO Reply VALUES ((?), (?), (?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Email=(?), Content=(?), ThreadID=(?), CourseCode=(?), Type=(?)";
+			PreparedStatement st = conn.prepareStatement(update);
 			st.setInt(1, replyID);
 			st.setString(2, email);
 			st.setString(3, content);

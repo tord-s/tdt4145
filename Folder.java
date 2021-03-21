@@ -66,8 +66,8 @@ public class Folder extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			String query = "INSERT INTO Folder VALUES ((?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), ParentID=(?)";
-			PreparedStatement st = conn.prepareStatement(query);
+			String update = "INSERT INTO Folder VALUES ((?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), ParentID=(?)";
+			PreparedStatement st = conn.prepareStatement(update);
 			st.setInt(1, folderID);
 			st.setString(2, courseCode);
 			st.setString(3, name);

@@ -93,8 +93,8 @@ public class Course extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			String query = "INSERT INTO Course VALUES ((?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), Term=(?), AllowAnonymous=(?)";
-			PreparedStatement st = conn.prepareStatement(query);
+			String update = "INSERT INTO Course VALUES ((?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), Term=(?), AllowAnonymous=(?)";
+			PreparedStatement st = conn.prepareStatement(update);
 			st.setString(1, courseCode);
 			st.setString(2, name);
 			st.setString(3, term);
@@ -174,8 +174,8 @@ public class Course extends ActiveDomainObject {
 		return term;
 	}
 
-	public int allowsAnonymous() {
-		return allowAnonymous;
+	public boolean allowsAnonymous() {
+		return (allowAnonymous == 1);
 	}
 
 	public List<Integer> getThreadIDs() {

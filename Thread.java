@@ -65,11 +65,6 @@ public class Thread extends ActiveDomainObject {
 			st.setString(2, courseCode);
 			st.setString(3, "StudentsAnswer");
 			studAnsID = st.executeQuery().getInt("ReplyID");
-			/*
-			 * st = conn.prepareStatement(query); // Usikker på om dette trengs 
-			 * st.setInt(1,threadID);
-			 * st.setString(2, courseCode);
-			 */
 			st.setString(3, "InstructorsAnswer");
 			instAnsID = st.executeQuery().getInt("ReplyID");
 			
@@ -109,8 +104,6 @@ public class Thread extends ActiveDomainObject {
 			st.setInt(1, threadID);
 			st.setString(2, courseCode);
 			for (String tag : tags) {
-				/*st.setInt(1, threadID); // VET IKKE OM DETTE TRENGS
-				st.setString(2, courseCode);*/
 				st.setString(3, tag);
 				st.execute();
 			}

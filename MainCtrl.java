@@ -10,16 +10,8 @@ public class MainCtrl implements Runnable {
 	private int folderID; // Active folder
 	private int threadID; // Active thread
 	private Connection conn;
-	private Scanner sc; // LA INN SCANNEREN SOM ET FELT SLIK AT MAN SLIPPER Å PUTTE DEN SOM ARGUMENT I MANGE METODER
+	private Scanner sc;
 
-	// public String userInput(String consoleMessage) {
-	// Scanner sc = new Scanner(System.in);
-	// System.out.println(consoleMessage);
-	// return sc.nextLine();
-	// }
-
-	// FLYTTET connect() OG disconnect() FRA DBConn HIT ETTERSOM VI ANTAGELIGVIS
-	// IKKE TRENGER FLERE CONNECTOR-KLASSER UANSETT
 	/**
 	 * Initializes the conn field as a Connection to a database
 	 */
@@ -48,18 +40,6 @@ public class MainCtrl implements Runnable {
 		}
 	}
 
-	/*
-	 * private static Boolean logIn(Scanner sc, MainCtrl mainCtrl) {
-	 * System.out.print("Email:"); String email = sc.nextLine();
-	 * System.out.print("Password:"); String password = sc.nextLine(); User user =
-	 * new User(email); user.initialize(mainCtrl.conn); Boolean valid_login =
-	 * user.checkPassword(password); if (valid_login) { mainCtrl.userEmail = email;
-	 * System.out.println("Logged in successfully"); return true; } else {
-	 * System.out.println("Log in failed - Invalid email or password");
-	 * System.out.println("Please try again"); return false; } }
-	 */
-
-	// GJORDE DENNE IKKE-STATISK
 	/**
 	 * Asks a user for input of email and password and logs in the user if these
 	 * match
@@ -91,82 +71,6 @@ public class MainCtrl implements Runnable {
 		}
 	}
 
-	// FLYTTET DENNE FRA COURSE TIL HER.
-	// FØLER DETTE GIR MER MENING ETTERSOM METODEN UANSETT TRENGER ET MainCtrl
-	// OBJEKT FOR HENTING AV CONN
-	/**
-	 * Finds all courses that the user participates in
-	 * 
-	 * @return A List of course codes
-	 */
-	private List<String> viewCoursesForUser() {
-		List<String> result = new LinkedList<>();
-		try {
-			String query = "SELECT CourseCode FROM UserInCourse WHERE Email=(?)";
-			PreparedStatement st = conn.prepareStatement(query);
-			st.setString(1, userEmail);
-			ResultSet rs = st.executeQuery();
-			while (rs.next()) {
-				result.add(rs.getString("CourseCode"));
-			}
-		} catch (Exception e) {
-			System.out.println("db error during initialization of Courses for User " + userEmail);
-		}
-		return result;
-	}
-
-	/*
-	 * private static void selectCourseAndFolder(MainCtrl mainCtrl, Scanner sc) {
-	 * LinkedList<String> courses = Course.getCoursesForUser(mainCtrl);
-	 * System.out.println("\nYou are following these courses"); for (String i :
-	 * courses) { System.out.println(i); }
-	 * System.out.println("\nPlease write course code of course you want to view");
-	 * System.out.print("Course code:"); mainCtrl.courseCode = sc.nextLine(); Course
-	 * course = new Course(mainCtrl.courseCode); course.initialize(mainCtrl.conn);
-	 * LinkedList<String> folders = course.getFolders(mainCtrl);
-	 * System.out.println("\nCourse has following folders:"); for (String i :
-	 * folders) { System.out.println(i); }
-	 * System.out.println("\nPlease write ID of folder you want to view");
-	 * System.out.print("ID:"); mainCtrl.folderID = Integer.parseInt(sc.nextLine());
-	 * course.initialize(mainCtrl.conn); }
-	 */
-
-	// GJORDE DENNE METODEN IKKE-STATISK OG SEPARERTE DEN INN I FLERE METODER
-	/*private void selectCourseAndFolder() {
-		// Find and list all accessible courses
-		List<String> courses = viewCoursesForUser();
-		System.out.println("\nYou are following these courses");
-		for (String s : courses) {
-			System.out.println(s);
-		}
-		// Ask for user input on the courseCode of the course to view
-		System.out.println("\nPlease write course code of course you want to view");
-		System.out.print("Course code:");
-		courseCode = sc.nextLine();
-		// Initialize a course based on input courseCode
-		Course course = new Course(courseCode);
-		course.initialize(conn);
-		// Find and list the folders within the course
-		List<String> folders = course.viewFolders(conn);
-		System.out.println("\nCourse has following folders:");
-		for (String s : folders) {
-			System.out.println(s);
-		}
-		// Ask for user input on the folderID of the folder to view
-		System.out.println("\nPlease write ID of folder you want to view");
-		System.out.print("ID:");
-		folderID = Integer.parseInt(sc.nextLine());
-		// Initialize a folder based on input folderID, courseCode
-		Folder folder = new Folder(folderID, courseCode);
-		folder.initialize(conn);
-		// Find and list all Threads in this Folder
-		List<String> threads = folder.viewThreads(conn);
-		System.out.println("\nThreads:");
-		for (String s : threads) {
-			System.out.println(s);
-		}
-	}*/
-	
 	/**
 	 * Lists all available courses for the user and asks for course-selection
 	 */
@@ -188,16 +92,10 @@ public class MainCtrl implements Runnable {
 	 * Lists all folders in active course and asks for folder-selection
 	 */
 	private void folderSelection() {
-		// Initialize a course based on input courseCode
+		// Initialize a course based on input courseCode and view its folders
 		Course course = new Course(courseCode);
 		course.initialize(conn);
-		
-		// Find and list the folders within the course
-		List<String> folders = course.viewFolders(conn);
-		System.out.println("\nCourse has following folders:");
-		for (String s : folders) {
-			System.out.println(s);
-		}
+		course.viewFolders(conn);
 		
 		// Ask for user input on the folderID of the folder to view
 		System.out.println("\nPlease write ID of the folder you want to view");
@@ -209,16 +107,10 @@ public class MainCtrl implements Runnable {
 	 * Lists all threads in active folder and asks for thread-selection
 	 */
 	private void threadSelection() {
-		// Initialize a folder based on input folderID, courseCode
+		// Initialize a folder based on input folderID, courseCode and view its threads
 		Folder folder = new Folder(folderID, courseCode);
 		folder.initialize(conn);
-		
-		// Find and list all Threads in this Folder
-		List<String> threads = folder.viewThreads(conn);
-		System.out.println("\nThreads:");
-		for (String s : threads) {
-			System.out.println(s);
-		}
+		folder.viewThreads(conn);
 		
 		// Asks for user input on the threadID of the thread to view
 		System.out.println("\nPlease write ID of the thread you want to view");
@@ -227,7 +119,7 @@ public class MainCtrl implements Runnable {
 	}
 	
 	/**
-	 * Takes user input on posting of a new thread
+	 * Posts a new thread to active folder based on user input
 	 */
 	private void threadPosting() {
 		// Take user input on content
@@ -253,20 +145,18 @@ public class MainCtrl implements Runnable {
 			}
 		}
 		
-		// Find threadID
+		// Find threadID of new thread
 		Course course = new Course(courseCode);
 		course.initialize(conn);
 		List<Integer> threadIDs = course.getThreadIDs();
 		int newID = threadIDs.get(threadIDs.size() - 1) + 1;
 		
-		// LAGRINGEN AV Reply OG Thread UNDER VIRKER IKKE! HAR IKKE FUNNET UT HVORFOR IKKE ENDA...
-		
 		// Create and save new thread
 		new Thread(newID, courseCode, content, userEmail, folderID, tags).save(conn);
 		
 		// Create and save two empty replies
-		int studReplyID = (int) (10*Math.random()); // KJØRER DENNE TAKTIKKEN PÅ ReplyID INNTIL VIDERE TENKER JEG
-		int instReplyID = (int) (10*Math.random());
+		int studReplyID = (int) (Integer.MAX_VALUE*Math.random()); // KJØRER DENNE TAKTIKKEN PÅ ReplyID INNTIL VIDERE TENKER JEG
+		int instReplyID = (int) (Integer.MAX_VALUE*Math.random());
 		new Reply(studReplyID, null, null, newID, courseCode, "StudentsAnswer").save(conn);
 		new Reply(instReplyID, null, null, newID, courseCode, "InstructorsAnswer").save(conn);
 		
@@ -286,7 +176,6 @@ public class MainCtrl implements Runnable {
 		System.out.println("\nWelcome to our Piazza-ish application");
 		sc = new Scanner(System.in);
 		
-		/*
 		// Log in
 		boolean successfull_login = logIn();
 		while (!successfull_login) {
@@ -296,12 +185,7 @@ public class MainCtrl implements Runnable {
 		// Selection of course and folder
 		courseSelection();
 		folderSelection();
-		*/
 		
-		//MIDLERTIDIG
-		userEmail = "jakob.torsvik@example.com";
-		courseCode = "TDT4145";
-		folderID = 1;
 		
 		// Get input from user on if they would like to browse or post threads
 		System.out.println("\nWrite 'browse' if you would like to browse existing threads or 'post' if you would like to post a new thread");
@@ -320,31 +204,14 @@ public class MainCtrl implements Runnable {
 			browseOrPost = sc.nextLine();
 		}
 			
-		// Done
+		// Close scanner and disconnect from database
 		sc.close();
 		disconnect();
 	}
 
 	public static void main(String[] args) {
-		// HAR GENERELT GJORT HELE KODEN MINDRE STATISK OG MER OBJEKTORIENTERT. SYNTES
-		// DETTE ER RYDDIGERE. ÅPEN FOR MOTARGUMENTER.
-		//
-		// PRØV OGSÅ GJERNE SÅ GODT MAN KAN Å SKRIVE KOMMENTARER UNDERVEIS I KODEN.
-		// DETTE GJØR DET LETTERE Å LESE, SAMT REDIGERE. I TILLEGG SER JEG FOR MEG AT
-		// DET VIL VÆRE ET PLUSS VED INNLEVERING.
-
 		MainCtrl mainCtrl = new MainCtrl();
 		mainCtrl.run();
-
-		// FLYTTET DETTE INN I EN EGEN run() METODE I MainCtrl FOR MER RYDDIGHET OG
-		// OVERSIKT I KODEN
-		/*
-		 * mainCtrl.connect();
-		 * System.out.println("\nWelcome to our Piazza-ish application"); Scanner sc =
-		 * new Scanner(System.in); Boolean successfull_login = logIn(sc, mainCtrl);
-		 * while (!successfull_login) { successfull_login = logIn(sc, mainCtrl); }
-		 * selectCourseAndFolder(mainCtrl, sc); sc.close();
-		 */
 	}
 
 }

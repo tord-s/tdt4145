@@ -59,7 +59,25 @@ public class User extends ActiveDomainObject {
 			System.out.println("db error during saving of User " + email);
 		}
 	}
-
+	
+	/**
+	 * Prints out all courses that user has access to to console
+	 * @param conn Connection to database
+	 */
+	public void viewCourses(Connection conn) {
+		try {
+			String query = "SELECT CourseCode FROM UserInCourse WHERE Email=(?)";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, email);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				System.out.println(rs.getString("CourseCode"));
+			}
+		} catch (Exception e) {
+			System.out.println("db error during initialization of Courses for User " + email);
+		}
+	}
+	
 	/**
 	 * Checks if a given password matches users password
 	 * 

@@ -80,20 +80,22 @@ public class Folder extends ActiveDomainObject {
 		}
 	}
 
-	public List<String> viewThreads(Connection conn) {
-		List<String> result = new LinkedList<>();
+	/**
+	 * Prints out all threads in folder to console
+	 * @param conn Connection to database
+	 */
+	public void viewThreads(Connection conn) {
 		try {
 			String query = "SELECT ThreadID, Email FROM Thread WHERE CourseCode=(?)";
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, courseCode);
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
-				result.add("ID: " + rs.getString("ThreadID") + " User: " + rs.getString("Email"));
+				System.out.println("ID: " + rs.getString("ThreadID") + " User: " + rs.getString("Email"));
 			}
 		} catch (Exception e) {
 			System.out.println("db error while getting Folders for Course " + courseCode);
 		}
-		return result;
 	}
 
 	public int getFolderID() {

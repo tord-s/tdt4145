@@ -7,10 +7,10 @@ public class Course extends ActiveDomainObject {
 	private String name;
 	private String term;
 	private int allowAnonymous;
-	private List<Integer> threadIDs = new LinkedList<>(); // TO-DO: INITIALIZE!
-	private List<Integer> folderIDs = new LinkedList<>(); // TRENGER VI EGENTLIG DISSE FELTENE??
-	private List<String> studentEmails = new LinkedList<>(); // TO-DO: INITIALIZE!
-	private List<String> instructorEmails = new LinkedList<>(); // TO-DO: INITIALIZE!
+	private List<Integer> threadIDs = new LinkedList<>();
+	private List<Integer> folderIDs = new LinkedList<>();
+	private List<String> studentEmails = new LinkedList<>();
+	private List<String> instructorEmails = new LinkedList<>();
 
 	/**
 	 * Constructor for a in-database course
@@ -36,12 +36,6 @@ public class Course extends ActiveDomainObject {
 		this.allowAnonymous = allowAnonymous;
 	}
 
-	// How to use prepeared statements:
-	// String query = "SELECT Name FROM Folder WHERE CourseCode=(?)";
-	// PreparedStatement st = mainCtrl.conn.prepareStatement(query);
-	// st.setString(1, courseCode);
-	// ResultSet rs = st.executeQuery();
-
 	@Override
 	public void initialize(Connection conn) {
 		try {
@@ -55,7 +49,7 @@ public class Course extends ActiveDomainObject {
 				term = rs.getString("Term");
 				allowAnonymous = rs.getInt("AllowAnonymous");
 			}
-			
+
 			// Initialize threadIDs
 			query = "SELECT ThreadID FROM Thread WHERE CourseCode=(?)";
 			st = conn.prepareStatement(query);
@@ -64,7 +58,7 @@ public class Course extends ActiveDomainObject {
 			while (rs.next()) {
 				threadIDs.add(rs.getInt("ThreadID"));
 			}
-			
+
 			// Initialize folderIDs
 			query = "SELECT FolderID FROM Folder WHERE CourseCode=(?)";
 			st = conn.prepareStatement(query);
@@ -73,7 +67,7 @@ public class Course extends ActiveDomainObject {
 			while (rs.next()) {
 				folderIDs.add(rs.getInt("FolderID"));
 			}
-			
+
 			// Initialize studentEmails
 			query = "SELECT Email FROM UserInCourse WHERE CourseCode=(?) AND Role=(?)";
 			st = conn.prepareStatement(query);
@@ -83,16 +77,14 @@ public class Course extends ActiveDomainObject {
 			while (rs.next()) {
 				studentEmails.add(rs.getString("Email"));
 			}
-			
+
 			// Initialize instructorEmails
-			/*st = conn.prepareStatement(query); // VET IKKE OM DETTE TRENGS
-			st.setString(1, courseCode);*/
 			st.setString(2, "Instructor");
 			rs = st.executeQuery();
 			while (rs.next()) {
 				instructorEmails.add(rs.getString("Email"));
 			}
-			
+
 		} catch (Exception e) {
 			System.out.println("db error during initialization of Course " + courseCode);
 		}
@@ -115,17 +107,6 @@ public class Course extends ActiveDomainObject {
 			System.out.println("db error during saving of Course " + courseCode);
 		}
 	}
-
-	/*
-	 * public static List<String> getCoursesForUser(MainCtrl mainCtrl) {
-	 * List<String> result = new LinkedList<String>(); try { String query =
-	 * "SELECT CourseCode FROM UserInCourse WHERE Email=(?)"; PreparedStatement st =
-	 * mainCtrl.conn.prepareStatement(query); st.setString(1,
-	 * mainCtrl.getUserEmail()); ResultSet rs = st.executeQuery(); while (rs.next())
-	 * { result.add(rs.getString("CourseCode")); } } catch (Exception e) {
-	 * System.out.println("db error during initialization of Courses for User " +
-	 * mainCtrl.getUserEmail()); } return result; }
-	 */
 
 	/**
 	 * Checks if course has student
@@ -160,31 +141,25 @@ public class Course extends ActiveDomainObject {
 		}
 		return result;
 	}
-	
-	// ENDRET DENNE FRA Å HA MainCtrl SOM PARAMETER TIL Å HA EN Connection FOR Å
-	// VÆRE MER KONSEKVENT I KODEN
+
 	/**
-	 * Finds all folders belonging to the course
+	 * Prints all folders in course to console
 	 * 
 	 * @param conn Connection to the database
-	 * @return A List of all belonging folders as a String of ID and name
 	 */
-	public List<String> viewFolders(Connection conn) {
-		List<String> result = new LinkedList<>();
+	public void viewFolders(Connection conn) {
 		try {
 			String query = "SELECT FolderID, Name FROM Folder WHERE CourseCode=(?)";
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, courseCode);
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
-				result.add("ID: " + rs.getString("FolderID") + " Name: " + rs.getString("Name"));
+				System.out.println("ID: " + rs.getString("FolderID") + " Name: " + rs.getString("Name"));
 			}
 		} catch (Exception e) {
 			System.out.println("db error while getting Folders for Course " + courseCode);
 		}
-		return result;
 	}
-
 
 	public String getCourseCode() {
 		return courseCode;
@@ -201,19 +176,19 @@ public class Course extends ActiveDomainObject {
 	public int allowsAnonymous() {
 		return allowAnonymous;
 	}
-	
+
 	public List<Integer> getThreadIDs() {
 		return threadIDs;
 	}
-	
+
 	public List<Integer> getFolderIDs() {
 		return folderIDs;
 	}
-	
+
 	public List<String> getStudentEmails() {
 		return studentEmails;
 	}
-	
+
 	public List<String> getInstructorEmails() {
 		return instructorEmails;
 	}

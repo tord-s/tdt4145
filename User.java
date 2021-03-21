@@ -47,7 +47,7 @@ public class User extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			String query = "INSERT INTO Course VALUES ((?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), Password(?)";
+			String query = "INSERT INTO User VALUES ((?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), Password(?)";
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, email);
 			st.setString(2, name);

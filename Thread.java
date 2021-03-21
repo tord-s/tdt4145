@@ -34,15 +34,12 @@ public class Thread extends ActiveDomainObject {
 	 * @param studAnsID
 	 * @param instAnsID
 	 */
-	public Thread(int threadID, String courseCode, String content, String email, int folderID, int studAnsID,
-			int instAnsID, List<String> tags) {
+	public Thread(int threadID, String courseCode, String content, String email, int folderID, List<String> tags) {
 		this.threadID = threadID;
 		this.courseCode = courseCode;
 		this.content = content;
 		this.email = email;
 		this.folderID = folderID;
-		this.studAnsID = studAnsID;
-		this.instAnsID = instAnsID;
 		this.tags = tags;
 	}
 
@@ -94,7 +91,7 @@ public class Thread extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
-			String query = "INSERT INTO Course VALUES ((?), (?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Content=(?), Email=(?), FolderID=(?)";
+			String query = "INSERT INTO Thread VALUES ((?), (?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Content=(?), Email=(?), FolderID=(?)";
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setInt(1, threadID);
 			st.setString(2, courseCode);

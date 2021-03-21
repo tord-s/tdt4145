@@ -261,14 +261,14 @@ public class MainCtrl implements Runnable {
 		
 		// LAGRINGEN AV Reply OG Thread UNDER VIRKER IKKE! HAR IKKE FUNNET UT HVORFOR IKKE ENDA...
 		
+		// Create and save new thread
+		new Thread(newID, courseCode, content, userEmail, folderID, tags).save(conn);
+		
 		// Create and save two empty replies
 		int studReplyID = (int) (10*Math.random()); // KJØRER DENNE TAKTIKKEN PÅ ReplyID INNTIL VIDERE TENKER JEG
 		int instReplyID = (int) (10*Math.random());
 		new Reply(studReplyID, null, null, newID, courseCode, "StudentsAnswer").save(conn);
 		new Reply(instReplyID, null, null, newID, courseCode, "InstructorsAnswer").save(conn);
-		
-		// Create and save new thread
-		new Thread(newID, courseCode, content, userEmail, folderID, studReplyID, instReplyID, tags).save(conn);
 		
 		// Confirmation for user
 		Folder folder = new Folder(folderID, courseCode);
@@ -286,6 +286,7 @@ public class MainCtrl implements Runnable {
 		System.out.println("\nWelcome to our Piazza-ish application");
 		sc = new Scanner(System.in);
 		
+		/*
 		// Log in
 		boolean successfull_login = logIn();
 		while (!successfull_login) {
@@ -295,6 +296,12 @@ public class MainCtrl implements Runnable {
 		// Selection of course and folder
 		courseSelection();
 		folderSelection();
+		*/
+		
+		//MIDLERTIDIG
+		userEmail = "jakob.torsvik@example.com";
+		courseCode = "TDT4145";
+		folderID = 1;
 		
 		// Get input from user on if they would like to browse or post threads
 		System.out.println("\nWrite 'browse' if you would like to browse existing threads or 'post' if you would like to post a new thread");

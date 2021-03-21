@@ -64,9 +64,13 @@ public class Thread extends ActiveDomainObject {
 			st.setInt(1, threadID);
 			st.setString(2, courseCode);
 			st.setString(3, "StudentsAnswer");
-			studAnsID = st.executeQuery().getInt("ReplyID");
+			rs = st.executeQuery();
+			rs.next();
+			studAnsID = rs.getInt("ReplyID");
 			st.setString(3, "InstructorsAnswer");
-			instAnsID = st.executeQuery().getInt("ReplyID");
+			rs = st.executeQuery();
+			rs.next();
+			instAnsID = rs.getInt("ReplyID");
 			
 			// Initialize tags
 			query = "SELECT Tag FROM ThreadTags WHERE ThreadID=(?) AND CourseCode=(?)";
@@ -110,6 +114,30 @@ public class Thread extends ActiveDomainObject {
 		} catch (Exception e) {
 			System.out.println("db error during saving of Thread " + threadID + ", " + courseCode);
 		}
+	}
+	
+	/**
+	 * Prints out content, tags and replies of thread to console
+	 */
+	public void view(Connection conn) {
+		// Print out tags and content
+		System.out.print("\n	");
+		for (int i = 0; i < tags.size(); i++) {
+			System.out.print("#" + tags.get(i));
+			if (i != tags.size() - 1) {
+				System.out.print(", ");
+			}
+		}
+		System.out.println("\n	" + content);
+		
+		// Print out replies
+		Reply studReply = new Reply(studAnsID);
+		Reply instReply = new Reply(instAnsID);
+		studReply.initialize(conn);
+		instReply.initialize(conn);
+		studReply.view();
+		System.out.println();
+		instReply.view();
 	}
 
 	public int getThreadID() {

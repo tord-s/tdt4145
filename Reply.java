@@ -27,12 +27,15 @@ public class Reply extends ActiveDomainObject {
 	 * @param courseCode
 	 * @param type
 	 */
-	public Reply(int replyID, String email, String content, int threadID, String courseCode, String type) {
+	public Reply(int replyID, String email, String content, int threadID, String courseCode, String type) throws Exception {
 		this.replyID = replyID;
 		this.email = email;
 		this.content = content;
 		this.threadID = threadID;
 		this.courseCode = courseCode;
+		if (!type.equals("StudentsAnswer") && !type.equals("InstructorsAnswer")) {
+			throw new Exception("Type must be either 'StudentsAnswer' or 'InstructorsAnswer'");
+		}
 		this.type = type;
 	}
 
@@ -49,7 +52,7 @@ public class Reply extends ActiveDomainObject {
 				content = rs.getString("Content");
 				threadID = rs.getInt("ThreadID");
 				courseCode = rs.getString("CourseCode");
-				type = rs.getString("String");
+				type = rs.getString("Type");
 			}
 		} catch (Exception e) {
 			System.out.println("db error during initialization of Reply " + replyID);
@@ -75,6 +78,28 @@ public class Reply extends ActiveDomainObject {
 			st.executeUpdate();
 		} catch (Exception e) {
 			System.out.println("db error during saving of Reply " + replyID);
+		}
+	}
+	
+	/**
+	 * Print out 
+	 * @throws Exception
+	 */
+	public void view() {
+		if (type.equals("StudentsAnswer")) {
+			System.out.println("\n	Student's answer:");
+		} else if (type.equals("InstructorsAnswer")) {
+			System.out.println("\n	Instructor's answer:");
+		}
+		
+		if (content != null) {
+			System.out.println("	" + content);
+			System.out.print("	Answered by: ");
+			if (email != null) {
+				System.out.print(email);
+			} else {
+				System.out.print("Anonymous");
+			}
 		}
 	}
 

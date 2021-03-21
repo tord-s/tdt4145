@@ -171,5 +171,14 @@ INSERT INTO ThreadTags(ThreadID, CourseCode, Tag) VALUES(2, 'TDT4145', 'Svake kl
 INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(2, 'TDT4145', 'tord.softeland@example.com', true);
 INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(1, 'TDT4145', 'tord.softeland@example.com', false);
 
-INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (1, 2, 'TDT4145', 'jakob.torsvik@example.com',
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (1, 1, 'TDT4145', NULL,
+'StudentsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (2, 1, 'TDT4145', NULL,
+'InstructorsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (3, 2, 'TDT4145', 'tord.softeland@example.com',
 'StudentsAnswer', 'Vet ikke helt');
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (4, 2, 'TDT4145', NULL,
+'InstructorsAnswer', NULL);

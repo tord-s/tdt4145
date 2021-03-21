@@ -86,15 +86,21 @@ public class Folder extends ActiveDomainObject {
 	 */
 	public void viewThreads(Connection conn) {
 		try {
-			String query = "SELECT ThreadID, Email FROM Thread WHERE CourseCode=(?)";
+			String query = "SELECT ThreadID, Email FROM Thread WHERE CourseCode=(?) AND FolderID =(?)";
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, courseCode);
+			st.setInt(2, folderID);
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
-				System.out.println("ID: " + rs.getString("ThreadID") + " User: " + rs.getString("Email"));
+				System.out.print("\n	ID: " + rs.getString("ThreadID") + " User: ");
+				if (rs.getString("Email") == null) {
+					System.out.print("Anonymous");
+				} else {
+					System.out.print(rs.getString("Email"));
+				}
 			}
 		} catch (Exception e) {
-			System.out.println("db error while getting Folders for Course " + courseCode);
+			System.out.println("db error while getting Threads for Folder " + folderID + ", " + courseCode);
 		}
 	}
 

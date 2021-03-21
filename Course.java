@@ -153,8 +153,9 @@ public class Course extends ActiveDomainObject {
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, courseCode);
 			ResultSet rs = st.executeQuery();
+			System.out.println();
 			while (rs.next()) {
-				System.out.println("ID: " + rs.getString("FolderID") + " Name: " + rs.getString("Name"));
+				System.out.println("	ID: " + rs.getString("FolderID") + " Name: " + rs.getString("Name"));
 			}
 		} catch (Exception e) {
 			System.out.println("db error while getting Folders for Course " + courseCode);

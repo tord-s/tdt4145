@@ -75,14 +75,14 @@ public class MainCtrl implements Runnable {
 	 * Lists all available courses for the user and asks for course-selection
 	 */
 	private void courseSelection() {
-		// Find and list all accessible courses
+		// Initialize active user and view its accessible courses
 		User user = new User(userEmail);
 		user.initialize(conn);
 		user.viewCourses(conn);
 		
 		// Ask for user input on the courseCode of the course to view
 		System.out.println("\nPlease write course code of the course you want to view");
-		System.out.print("Course code:");
+		System.out.print("Course code: ");
 		courseCode = sc.nextLine();
 	}
 	
@@ -90,14 +90,14 @@ public class MainCtrl implements Runnable {
 	 * Lists all folders in active course and asks for folder-selection
 	 */
 	private void folderSelection() {
-		// Initialize a course based on input courseCode and view its folders
+		// Initialize active course and view its folders
 		Course course = new Course(courseCode);
 		course.initialize(conn);
 		course.viewFolders(conn);
 		
 		// Ask for user input on the folderID of the folder to view
 		System.out.println("\nPlease write ID of the folder you want to view");
-		System.out.print("ID:");
+		System.out.print("ID: ");
 		folderID = Integer.parseInt(sc.nextLine());
 	}
 	
@@ -105,14 +105,15 @@ public class MainCtrl implements Runnable {
 	 * Lists all threads in active folder and asks for thread-selection
 	 */
 	private void threadSelection() {
-		// Initialize a folder based on input folderID, courseCode and view its threads
+		// Initialize active folder and view its threads
 		Folder folder = new Folder(folderID, courseCode);
 		folder.initialize(conn);
 		folder.viewThreads(conn);
 		
 		// Asks for user input on the threadID of the thread to view
+		System.out.println();
 		System.out.println("\nPlease write ID of the thread you want to view");
-		System.out.print("ID:");
+		System.out.print("ID: ");
 		threadID = Integer.parseInt(sc.nextLine());
 	}
 	
@@ -120,6 +121,24 @@ public class MainCtrl implements Runnable {
 	 * Posts a new thread to active folder based on user input
 	 */
 	private void threadPosting() {
+		// Take user input on anonymity
+		System.out.println("\nPost anonymously? (y/n)");
+		System.out.print("Your input: ");
+		String anonymousInput = sc.nextLine();
+		boolean anonymous = true;
+		while (true) {
+			if (anonymousInput.equals("y") || anonymousInput.equals("yes")) {
+				break;
+			} else if (anonymousInput.equals("n") || anonymousInput.equals("no")) {
+				anonymous = false;
+				break;
+			} else {
+				System.out.println(anonymousInput + " is not a valid input.");
+				System.out.print("Please try again: ");
+				anonymousInput = sc.nextLine();
+			}
+		}
+		
 		// Take user input on content
 		System.out.println("\nWrite the content of the new thread here:");
 		String content = sc.nextLine();
@@ -127,18 +146,20 @@ public class MainCtrl implements Runnable {
 		// Take user input on tags
 		List<String> tags = new LinkedList<>();
 		System.out.println("\nDo you want to add a tag? (y/n)");
+		System.out.print("Your input: ");
 		String addTag = sc.nextLine();
 		while (true) {
 			if (addTag.equals("y") || addTag.equals("yes")) {
-				System.out.println("\nTag:");
+				System.out.print("\nTag: ");
 				tags.add(sc.nextLine());
 				System.out.println("\nDo you want to add another tag? (y/n)");
+				System.out.print("Your input: ");
 				addTag = sc.nextLine();
 			} else if (addTag.equals("n") || addTag.equals("no")) {
 				break;
 			} else {
 				System.out.println("\n'" + addTag + "'" + " is not a valid input");
-				System.out.println("Please try again:");
+				System.out.print("Please try again: ");
 				addTag = sc.nextLine();
 			}
 		}
@@ -149,21 +170,27 @@ public class MainCtrl implements Runnable {
 		List<Integer> threadIDs = course.getThreadIDs();
 		int newID = threadIDs.get(threadIDs.size() - 1) + 1;
 		
-		// Create and save new thread
-		new Thread(newID, courseCode, content, userEmail, folderID, tags).save(conn);
+		// Create and save new thread with email set to null if thread is posted anonymously
+		new Thread(newID, courseCode, content, anonymous ? null : userEmail, folderID, tags).save(conn);
 		
 		// Create and save two empty replies
-		int studReplyID = (int) (Integer.MAX_VALUE*Math.random()); // KJØRER DENNE TAKTIKKEN PÅ ReplyID INNTIL VIDERE TENKER JEG
+		int studReplyID = (int) (Integer.MAX_VALUE*Math.random());
 		int instReplyID = (int) (Integer.MAX_VALUE*Math.random());
-		new Reply(studReplyID, null, null, newID, courseCode, "StudentsAnswer").save(conn);
-		new Reply(instReplyID, null, null, newID, courseCode, "InstructorsAnswer").save(conn);
+		try {
+			new Reply(studReplyID, null, null, newID, courseCode, "StudentsAnswer").save(conn);
+			new Reply(instReplyID, null, null, newID, courseCode, "InstructorsAnswer").save(conn);
+		} catch (Exception e) {
+			System.out.println("Error during instantiation of Reply");
+		}
 		
 		// Confirmation for user
 		Folder folder = new Folder(folderID, courseCode);
 		folder.initialize(conn);
 		String folderName = folder.getName();
-		System.out.println("Thread posted to folder " + folderName);
+		System.out.println("\nThread posted to folder " + folderName);
 	}
+	
+	
 	
 	@Override
 	public void run() {
@@ -174,24 +201,28 @@ public class MainCtrl implements Runnable {
 		System.out.println("\nWelcome to our Piazza-ish application");
 		sc = new Scanner(System.in);
 		
-		// Log in
-		boolean successfull_login = logIn();
-		while (!successfull_login) {
-			successfull_login = logIn();
-		}
+//		// Log in
+//		boolean successfull_login = logIn();
+//		while (!successfull_login) {
+//			successfull_login = logIn();
+//		}
 		
+		userEmail = "jakob.torsvik@example.com";
 		// Selection of course and folder
 		courseSelection();
 		folderSelection();
 		
 		
 		// Get input from user on if they would like to browse or post threads
-		System.out.println("\nWrite 'browse' if you would like to browse existing threads or 'post' if you would like to post a new thread");
-		System.out.println("Your input:");
+		System.out.println("\nWrite 'browse' if you would like to browse existing threads \nor 'post' if you would like to post a new thread");
+		System.out.print("Your input: ");
 		String browseOrPost = sc.nextLine();
 		while (true) {
 			if (browseOrPost.equals("browse")) {
 				threadSelection();
+				Thread thread = new Thread(threadID, courseCode);
+				thread.initialize(conn);
+				thread.view(conn);
 				break;
 			} else if (browseOrPost.equals("post")) {
 				threadPosting();

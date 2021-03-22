@@ -249,8 +249,7 @@ public class MainCtrl implements Runnable {
 	}
 
 	/**
-	 * Takes user input on if they would like to view statistics, and if so, prints
-	 * out user statistics like how many posts created etc.
+	 * Prints out statistics on user activity
 	 */
 	private void viewStatistics() {
 		/*

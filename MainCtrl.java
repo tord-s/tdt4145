@@ -20,7 +20,7 @@ public class MainCtrl implements Runnable {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Properties p = new Properties();
 			p.put("user", "root");
-			p.put("password", "toor");
+			p.put("password", "LiteKreativtPass0rd");
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://localhost:3306/prosjekt?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false&serverTimezone=UTC",
 					p);
@@ -307,6 +307,39 @@ public class MainCtrl implements Runnable {
 		// Confirmation for user
 		System.out.println("Reply given to Thread " + threadID);
 	}
+
+	private void viewStatistics() {
+		System.out.println("\n Would you like to see statistics for how many posts users have created and read? (y/n)");
+		String answer = sc.nextLine();
+		if (answer.equals("y") || answer.equals("yes")) {
+			try {
+				String query = "SELECT A.Email, ThreadsRead, ThreadsCreated" +
+				" FROM (SELECT Email, count(userreads.ThreadID) as ThreadsRead" +
+				" FROM user LEFT OUTER JOIN userreadsthread as userreads USING(Email)" +
+				" group by Email order by ThreadsRead desc) AS A" +
+				" LEFT OUTER JOIN (SELECT Email, count(ThreadID) as ThreadsCreated" +
+				" FROM thread group by thread.Email) AS B" +
+				" ON A.Email=B.Email;";
+				PreparedStatement st = conn.prepareStatement(query);
+				ResultSet rs = st.executeQuery();
+				System.out.println("Statistics:");
+				ResultSetMetaData rsmd = rs.getMetaData();
+				int columnsNumber = rsmd.getColumnCount();
+				while (rs.next()) {
+					for (int i = 1; i <= columnsNumber; i++) {
+						if (i > 1) System.out.print(",  ");
+						String columnValue = rs.getString(i);
+						System.out.print(columnValue + " " + rsmd.getColumnName(i));
+					}
+					System.out.println("\n");
+				}
+			} catch (Exception e) {
+				System.out.println("Error while retriving statistics " + e);
+			}
+		} else if (answer.equals("n") || answer.equals("no")) {
+			return;
+		}
+	}
 	
 	@Override
 	public void run() {
@@ -322,6 +355,8 @@ public class MainCtrl implements Runnable {
 		while (!successfull_login) {
 			successfull_login = logIn();
 		}
+
+		viewStatistics();
 		
 		// Selection of course and folder
 		courseSelection();

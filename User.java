@@ -70,6 +70,7 @@ public class User extends ActiveDomainObject {
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, email);
 			ResultSet rs = st.executeQuery();
+			System.out.println("You are registered in the following courses:");
 			while (rs.next()) {
 				System.out.println(rs.getString("CourseCode"));
 			}

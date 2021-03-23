@@ -90,9 +90,13 @@ public class MainCtrl implements Runnable {
 	private void connect() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
+			
+			// Username and password for the database
 			Properties p = new Properties();
 			p.put("user", "root");
 			p.put("password", "toor");
+			
+			// Create connection to the database
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://localhost:3306/prosjekt?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false&serverTimezone=UTC",
 					p);

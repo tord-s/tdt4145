@@ -90,8 +90,7 @@ public class Reply extends ActiveDomainObject {
 	}
 	
 	/**
-	 * Print out 
-	 * @throws Exception
+	 * Prints out content and author of reply to console
 	 */
 	public void view() {
 		if (type.equals("StudentsAnswer")) {
@@ -99,7 +98,6 @@ public class Reply extends ActiveDomainObject {
 		} else if (type.equals("InstructorsAnswer")) {
 			System.out.println("\n	Instructor's answer:");
 		}
-		
 		if (content != null) {
 			System.out.println("	" + content);
 			System.out.print("	Answered by: ");

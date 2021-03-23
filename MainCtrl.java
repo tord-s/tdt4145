@@ -5,7 +5,8 @@ import java.util.Properties;
 import java.util.Scanner;
 
 /**
- * Main class for the database-application. Takes most of the user input and launches the application when run
+ * Main class for the database-application. Takes most of the user input and
+ * launches the application when run
  * 
  * @author Bjørge, Martinus
  * @author Søfteland, Tord Østensen
@@ -19,6 +20,69 @@ public class MainCtrl implements Runnable {
 	private int threadID; // Active thread
 	private Connection conn;
 	private Scanner sc;
+
+	@Override
+	public void run() {
+		// Connect to database
+		connect();
+
+		// Welcome user and create a Scanner for input
+		System.out.println("\nWelcome to our Piazza-ish application");
+		sc = new Scanner(System.in);
+
+		// Log in
+		boolean successfull_login = logIn();
+		while (!successfull_login) {
+			successfull_login = logIn();
+		}
+
+		// Selection of course
+		courseSelection();
+
+		// Option to view statistics of user activity within a course (Assumes only
+		// instructors have permission to view statistics)
+		User user = new User(userEmail);
+		user.initialize(conn);
+		if (user.roleInCourse(courseCode, conn).equals("Instructor")) {
+			if (yesNoInput("Would you like to see statistics for how many posts users have created and read?")) {
+				viewStatistics();
+			}
+		}
+
+		// Option to search for posts containing a specific user input keyword
+		if (yesNoInput("Would you like to seach for a thread with a given keyword?")) {
+			searchForPost();
+		}
+
+		// Selection of folder
+		folderSelection();
+
+		// Get input from user on if they would like to browse or post threads
+		System.out.println(
+				"\nWrite 'browse' if you would like to browse existing threads \nor 'post' if you would like to post a new thread");
+		System.out.print("Your input: ");
+		String browseOrPost = sc.nextLine();
+		while (true) {
+			if (browseOrPost.equals("browse")) {
+				threadSelection();
+				Thread thread = new Thread(threadID, courseCode);
+				thread.initialize(conn);
+				thread.view(conn);
+				userReadsThread();
+				break;
+			} else if (browseOrPost.equals("post")) {
+				threadPosting();
+				break;
+			}
+			System.out.println("\n'" + browseOrPost + "'" + " is not a valid input");
+			System.out.println("Please try again:");
+			browseOrPost = sc.nextLine();
+		}
+
+		// Close scanner and disconnect from database
+		sc.close();
+		disconnect();
+	}
 
 	/**
 	 * Initializes the conn field as a Connection to a specific database
@@ -259,18 +323,18 @@ public class MainCtrl implements Runnable {
 	}
 
 	/**
-	 * Prints out all threads and replies that has content containing a keyword given by user
+	 * Prints out all threads and replies that has content containing a keyword
+	 * given by user
 	 */
 	private void searchForPost() {
 		// Take user input to search for
 		System.out.print("Search for: ");
 		String search = sc.nextLine();
 		try {
-			String query = "SELECT ThreadID FROM thread"
-			 + " where CourseCode=(?) and LOWER(thread.Content) like (?);";
+			String query = "SELECT ThreadID FROM thread" + " where CourseCode=(?) and LOWER(thread.Content) like (?);";
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, courseCode);
-			st.setString(2, "%"+ search + "%");
+			st.setString(2, "%" + search + "%");
 			ResultSet rs = st.executeQuery();
 			System.out.println("Search Results - IDs of Posts with keyword: \n");
 			ResultSetMetaData rsmd = rs.getMetaData();
@@ -281,7 +345,7 @@ public class MainCtrl implements Runnable {
 						System.out.print(",  ");
 					}
 					String columnValue = rs.getString(i);
-					System.out.print(rsmd.getColumnName(i) + ": " +  columnValue );
+					System.out.print(rsmd.getColumnName(i) + ": " + columnValue);
 				}
 				System.out.println("\n");
 			}
@@ -296,14 +360,12 @@ public class MainCtrl implements Runnable {
 	private void viewStatistics() {
 		try {
 			String query = "SELECT A.Email, ThreadsRead, ThreadsCreated"
-				+ " FROM (SELECT Email, count(userreads.ThreadID) as ThreadsRead"
-						+ " FROM user LEFT OUTER JOIN userreadsthread as userreads USING(Email)"
-						+ " where userreads.CourseCode=(?)"
-						+ " group by Email order by ThreadsRead desc) AS A"
-				+ " LEFT OUTER JOIN (SELECT Email, count(ThreadID) as ThreadsCreated"
-					+ " FROM thread where thread.CourseCode=(?)" 
-					+ " group by thread.Email) AS B"
-				+ " ON A.Email=B.Email;";
+					+ " FROM (SELECT Email, count(userreads.ThreadID) as ThreadsRead"
+					+ " FROM user LEFT OUTER JOIN userreadsthread as userreads USING(Email)"
+					+ " where userreads.CourseCode=(?)" + " group by Email order by ThreadsRead desc) AS A"
+					+ " LEFT OUTER JOIN (SELECT Email, count(ThreadID) as ThreadsCreated"
+					+ " FROM thread where thread.CourseCode=(?)" + " group by thread.Email) AS B"
+					+ " ON A.Email=B.Email;";
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, courseCode);
 			st.setString(2, courseCode);
@@ -317,7 +379,7 @@ public class MainCtrl implements Runnable {
 						System.out.print(",  ");
 					}
 					String columnValue = rs.getString(i);
-					System.out.print(rsmd.getColumnName(i) + ": " +  columnValue );
+					System.out.print(rsmd.getColumnName(i) + ": " + columnValue);
 				}
 				System.out.println("\n");
 			}
@@ -326,9 +388,9 @@ public class MainCtrl implements Runnable {
 		}
 	}
 
-
 	/**
 	 * Takes either 'yes'/'y' or 'no'/'n' input from user as an answer to a question
+	 * 
 	 * @param question A yes-no question
 	 * @return True if user answered 'yes', False if user answered 'no'
 	 */
@@ -350,68 +412,6 @@ public class MainCtrl implements Runnable {
 			}
 		}
 		return result;
-	}
-
-	@Override
-	public void run() {
-		// Connect to database
-		connect();
-
-		// Welcome user and create a Scanner for input
-		System.out.println("\nWelcome to our Piazza-ish application");
-		sc = new Scanner(System.in);
-
-		// Log in
-		boolean successfull_login = logIn();
-		while (!successfull_login) {
-			successfull_login = logIn();
-		}
-
-		// Selection of course
-		courseSelection();
-
-		// Assumes only instructors have permission to view statistics
-		User user = new User(userEmail);
-		user.initialize(conn);
-
-		if (user.roleInCourse(courseCode, conn).equals("Instructor")) {
-			if (yesNoInput("Would you like to see statistics for how many posts users have created and read?")) {
-					viewStatistics();
-				}
-		}
-
-		if (yesNoInput("Would you like to seach for a thread with a given keyword?")) {
-				searchForPost();
-		}
-
-		// Selection of folder
-		folderSelection();
-
-		// Get input from user on if they would like to browse or post threads
-		System.out.println(
-				"\nWrite 'browse' if you would like to browse existing threads \nor 'post' if you would like to post a new thread");
-		System.out.print("Your input: ");
-		String browseOrPost = sc.nextLine();
-		while (true) {
-			if (browseOrPost.equals("browse")) {
-				threadSelection();
-				Thread thread = new Thread(threadID, courseCode);
-				thread.initialize(conn);
-				thread.view(conn);
-				userReadsThread();
-				break;
-			} else if (browseOrPost.equals("post")) {
-				threadPosting();
-				break;
-			}
-			System.out.println("\n'" + browseOrPost + "'" + " is not a valid input");
-			System.out.println("Please try again:");
-			browseOrPost = sc.nextLine();
-		}
-
-		// Close scanner and disconnect from database
-		sc.close();
-		disconnect();
 	}
 
 	public static void main(String[] args) {

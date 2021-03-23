@@ -3,8 +3,8 @@ import java.sql.*;
 /**
  * Represents an entry in the user table
  * 
- * @author Bjørge, Martinus
- * @author Søfteland, Tord Østensen
+ * @author Bjï¿½rge, Martinus
+ * @author Sï¿½fteland, Tord ï¿½stensen
  * @author Torsvik, Jakob Martin
  *
  */
@@ -101,6 +101,13 @@ public class User extends ActiveDomainObject {
 		return password.equals(p);
 	}
 	
+	/**
+	 * Checks the role of a user in a course
+	 * 
+	 * @param courseCode 
+	 * @param conn Connection to database
+	 * @return Role of the user in the given course
+	 */
 	public String roleInCourse(String courseCode, Connection conn) {
 		try {
 			String query = "SELECT Role FROM UserInCourse WHERE Email=(?) AND CourseCode=(?)";

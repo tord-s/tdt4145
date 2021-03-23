@@ -250,8 +250,11 @@ public class MainCtrl implements Runnable {
 		System.out.println("Reply given to Thread " + threadID);
 	}
 
-	private void searchForThread() {
-		// Take user input to seach for
+	/**
+	 * Prints out all threads and replies that has content containing a keyword given by user
+	 */
+	private void searchForPost() {
+		// Take user input to search for
 		System.out.print("Search for: ");
 		String search = sc.nextLine();
 		try {
@@ -260,9 +263,8 @@ public class MainCtrl implements Runnable {
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, courseCode);
 			st.setString(2, "%"+ search + "%");
-			System.out.println(st);
 			ResultSet rs = st.executeQuery();
-			System.out.println("Search Results - IDs of Threads with keyword: \n");
+			System.out.println("Search Results - IDs of Posts with keyword: \n");
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int columnsNumber = rsmd.getColumnCount();
 			while (rs.next()) {
@@ -276,7 +278,7 @@ public class MainCtrl implements Runnable {
 				System.out.println("\n");
 			}
 		} catch (Exception e) {
-			System.out.println("Error while retriving statistics " + e);
+			System.out.println("Error while searching for keyword " + e);
 		}
 	}
 
@@ -371,7 +373,7 @@ public class MainCtrl implements Runnable {
 		}
 
 		if (yesNoInput("Would you like to seach for a thread with a given keyword?")) {
-				searchForThread();
+				searchForPost();
 		}
 
 		// Selection of folder

@@ -195,10 +195,10 @@ INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (5
 INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (6, 3, 'TDT4145', NULL,
 'InstructorsAnswer', NULL);
 
-INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (7, 4, 'TDT4145', NULL,
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (7, 4, 'TDT4140', NULL,
 'StudentsAnswer', NULL);
 
-INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (8, 4, 'TDT4145', NULL,
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (8, 4, 'TDT4140', NULL,
 'InstructorsAnswer', NULL);
 
 INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (9, 5, 'TDT4145', NULL,

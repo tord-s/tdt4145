@@ -74,6 +74,7 @@ public class Folder extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
+			// Save folderID, courseCode, name and parentID
 			String update = "INSERT INTO Folder VALUES ((?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), ParentID=(?)";
 			PreparedStatement st = conn.prepareStatement(update);
 			st.setInt(1, folderID);

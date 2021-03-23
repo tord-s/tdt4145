@@ -55,6 +55,7 @@ public class User extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
+			// Save email, name and password
 			String update = "INSERT INTO User VALUES ((?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), Password(?)";
 			PreparedStatement st = conn.prepareStatement(update);
 			st.setString(1, email);

@@ -98,6 +98,7 @@ public class Thread extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
+			// Save threadID, courseCode, content, email and folderID
 			String update = "INSERT INTO Thread VALUES ((?), (?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Content=(?), Email=(?), FolderID=(?)";
 			PreparedStatement st = conn.prepareStatement(update);
 			st.setInt(1, threadID);

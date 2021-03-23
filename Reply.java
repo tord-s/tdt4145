@@ -70,6 +70,7 @@ public class Reply extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
+			// Save replyID, email, content, threadID, courseCode and type
 			String update = "INSERT INTO Reply VALUES ((?), (?), (?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Email=(?), Content=(?), ThreadID=(?), CourseCode=(?), Type=(?)";
 			PreparedStatement st = conn.prepareStatement(update);
 			st.setInt(1, replyID);

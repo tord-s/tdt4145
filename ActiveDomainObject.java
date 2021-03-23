@@ -17,7 +17,7 @@ public abstract class ActiveDomainObject {
 	public abstract void initialize(Connection conn);
 
 	/**
-	 * Saves the object to the database as an entity
+	 * Saves the object to the database as an entity. Overwrites if duplicate primary key exists
 	 * 
 	 * @param conn Connection to the database
 	 */

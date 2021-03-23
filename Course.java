@@ -101,6 +101,7 @@ public class Course extends ActiveDomainObject {
 	@Override
 	public void save(Connection conn) {
 		try {
+			// Save courseCode, name, term and allowAnonymous
 			String update = "INSERT INTO Course VALUES ((?), (?), (?), (?)) ON DUPLICATE KEY UPDATE Name=(?), Term=(?), AllowAnonymous=(?)";
 			PreparedStatement st = conn.prepareStatement(update);
 			st.setString(1, courseCode);

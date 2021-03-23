@@ -240,7 +240,7 @@ public class MainCtrl implements Runnable {
 
 		// Create and save a new reply
 		try {
-			new Reply(replyID, userEmail, content, threadID, courseCode,
+			new Reply(replyID, anonymous ? null : userEmail, content, threadID, courseCode,
 					role.equals("Student") ? "StudentsAnswer" : "InstructorsAnswer").save(conn);
 		} catch (Exception e) {
 			System.out.println("Error during instantiaion of Reply");

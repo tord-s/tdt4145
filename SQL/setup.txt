@@ -170,17 +170,12 @@ INSERT INTO folder(FolderID, CourseCode, Name, ParentID) VALUES(3, 'TDT4140', 'O
 INSERT INTO Thread(ThreadID, CourseCode, Content, Email, FolderID) VALUES(1, 'TDT4145', 'Jeg lurer på når eksamen er?', 'jakob.torsvik@example.com', 1);
 INSERT INTO Thread(ThreadID, CourseCode, Content, Email, FolderID) VALUES(2, 'TDT4145', 'Hvordan fungerer svake klasser?', 'jakob.torsvik@example.com', 2);
 INSERT INTO Thread(ThreadID, CourseCode, Content, Email, FolderID) VALUES(3, 'TDT4145', 'Hvordan funger VisualER?', 'tord.softeland@example.com', 2);
+INSERT INTO Thread(ThreadID, CourseCode, Content, Email, FolderID) VALUES(4, 'TDT4140', 'Når skal L4 leveres?', 'tord.softeland@example.com', 3);
 INSERT INTO Thread(ThreadID, CourseCode, Content, Email, FolderID) VALUES(5, 'TDT4145', 'Hva er WAL?', 'tord.softeland@example.com', 4);
 INSERT INTO Thread(ThreadID, CourseCode, Content, Email, FolderID) VALUES(6, 'TDT4145', 'Hva står wal for?', 'tord.softeland@example.com', 4);
-INSERT INTO Thread(ThreadID, CourseCode, Content, Email, FolderID) VALUES(4, 'TDT4140', 'Når skal L4 leveres?', 'tord.softeland@example.com', 3);
 
 INSERT INTO ThreadTags(ThreadID, CourseCode, Tag) VALUES(2, 'TDT4145', 'Svake klasser');
 
-INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(2, 'TDT4145', 'tord.softeland@example.com', true);
-INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(1, 'TDT4145', 'tord.softeland@example.com', false);
-INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(1, 'TDT4145', 'jakob.torsvik@example.com', true);
-INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(3, 'TDT4145', 'martinus.bjørge@example.com', false);
-INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(4, 'TDT4140', 'jakob.torsvik@example.com', false);
 
 INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (1, 1, 'TDT4145', NULL,
 'StudentsAnswer', NULL);
@@ -193,3 +188,34 @@ INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (3
 
 INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (4, 2, 'TDT4145', NULL,
 'InstructorsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (5, 3, 'TDT4145', NULL,
+'StudentsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (6, 3, 'TDT4145', NULL,
+'InstructorsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (7, 4, 'TDT4145', NULL,
+'StudentsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (8, 4, 'TDT4145', NULL,
+'InstructorsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (9, 5, 'TDT4145', NULL,
+'StudentsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (10, 5, 'TDT4145', NULL,
+'InstructorsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (11, 6, 'TDT4145', NULL,
+'StudentsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (12, 6, 'TDT4145', NULL,
+'InstructorsAnswer', NULL);
+
+INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(2, 'TDT4145', 'tord.softeland@example.com', true);
+INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(1, 'TDT4145', 'tord.softeland@example.com', false);
+INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(1, 'TDT4145', 'jakob.torsvik@example.com', true);
+INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(3, 'TDT4145', 'martinus.bjørge@example.com', false);
+INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(4, 'TDT4140', 'jakob.torsvik@example.com', false);
+

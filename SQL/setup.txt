@@ -1,0 +1,184 @@
+DROP TABLE IF EXISTS commentregards;
+DROP TABLE IF EXISTS reply;
+DROP TABLE IF EXISTS userreadsthread;
+DROP TABLE IF EXISTS threadtags;
+DROP TABLE IF EXISTS thread;
+DROP TABLE IF EXISTS folder;
+DROP TABLE IF EXISTS userincourse;
+DROP TABLE IF EXISTS course;
+DROP TABLE IF EXISTS user;
+
+
+CREATE TABLE User (
+Email VARCHAR(50) NOT NULL,
+Name VARCHAR(50),	 /* Tillater brukere uten navn */
+Password VARCHAR(50) NOT NULL,
+CONSTRAINT Email_PK PRIMARY KEY (Email)
+);
+
+CREATE TABLE Course (
+CourseCode VARCHAR(50) NOT NULL,
+Name VARCHAR(50), 	/* Tillater Course uten navn */
+Term VARCHAR(50) NOT NULL,  	/* Lagrer Term som en streng, ikke int */
+AllowAnonymous BOOL NOT NULL DEFAULT TRUE, /* Har en standardinnstilling */
+CONSTRAINT CourseCode_PK PRIMARY KEY (CourseCode)
+);
+
+CREATE TABLE UserInCourse (
+Email VARCHAR(50) NOT NULL,
+CourseCode VARCHAR(50) NOT NULL,
+Role VARCHAR(50) NOT NULL,
+CONSTRAINT CourseCode_PK PRIMARY KEY (Email, CourseCode),
+CONSTRAINT UserInCourse_Email_FK FOREIGN KEY (Email)
+REFERENCES User(Email)
+ON UPDATE CASCADE
+ON DELETE CASCADE,
+CONSTRAINT UserInCourse_CourseCode_FK FOREIGN KEY (CourseCode)
+REFERENCES Course(CourseCode)
+ON UPDATE CASCADE
+ON DELETE CASCADE   
+);
+
+CREATE TABLE Folder (
+FolderID INT NOT NULL AUTO_INCREMENT,
+CourseCode VARCHAR(50) NOT NULL,
+Name VARCHAR(50) NOT NULL, 
+ParentID INT, /* Kan være NULL om man er "top-level"-mappe */  
+CONSTRAINT Folder_PK PRIMARY KEY (FolderID, CourseCode),
+CONSTRAINT Folder_CourseCode_FK FOREIGN KEY (CourseCode)
+REFERENCES Course(CourseCode)
+ON UPDATE CASCADE
+ON DELETE CASCADE,
+CONSTRAINT Folder_ParentID_FK FOREIGN KEY (ParentID)
+REFERENCES Folder(FolderID)
+ON UPDATE CASCADE
+ON DELETE CASCADE 	/* Om man sletter foreldremappen slettes også barna */  
+);
+
+
+CREATE TABLE Thread (
+ThreadID INT NOT NULL AUTO_INCREMENT,
+CourseCode VARCHAR(50) NOT NULL,
+Content VARCHAR(500), 	/* Tillater tomt innhold */
+Email VARCHAR(50),
+FolderID INT NOT NULL,
+CONSTRAINT Thread_PK PRIMARY KEY (ThreadID, CourseCode),
+CONSTRAINT Thread_CourseCode_FK FOREIGN KEY (CourseCode)
+REFERENCES Course(CourseCode)
+ON UPDATE CASCADE
+ON DELETE CASCADE,
+CONSTRAINT Thread_Email_FK FOREIGN KEY (Email)
+REFERENCES User(Email)
+ON UPDATE CASCADE
+ON DELETE SET NULL, 	/* Dersom en bruker slettes vil innleggene den har laget få forfatter lik NULL */
+CONSTRAINT Thread_Folder_FK FOREIGN KEY (FolderID)
+REFERENCES Folder(FolderID)
+ON UPDATE CASCADE
+ON DELETE RESTRICT  	/* Får ikke slette mapper med Threads i */
+);
+
+CREATE TABLE ThreadTags (
+ThreadID INT NOT NULL,
+CourseCode VARCHAR(50) NOT NULL,
+Tag VARCHAR(50) NOT NULL,
+CONSTRAINT ThreadTags_PK PRIMARY KEY (ThreadID, CourseCode, Tag),
+CONSTRAINT ThreadTags_Thread_FK FOREIGN KEY (ThreadID)
+REFERENCES Thread(ThreadID)
+ON UPDATE CASCADE
+ON DELETE CASCADE, 
+CONSTRAINT ThreadTags_CourseCode_FK FOREIGN KEY (CourseCode)
+REFERENCES Course(CourseCode)
+ON UPDATE CASCADE
+ON DELETE CASCADE
+);
+
+CREATE TABLE UserReadsThread (
+ThreadID INT NOT NULL,
+CourseCode VARCHAR(50) NOT NULL,
+Email VARCHAR(50) NOT NULL,
+Likes BOOLEAN DEFAULT FALSE,
+CONSTRAINT UserReadsThread_PK PRIMARY KEY (ThreadID, CourseCode, Email),
+CONSTRAINT UserReadsThread_Thread_FK FOREIGN KEY (ThreadID)
+REFERENCES Thread(ThreadID)
+ON UPDATE CASCADE
+ON DELETE CASCADE, 
+CONSTRAINT UserReadsThread_CourseCode_FK FOREIGN KEY (CourseCode)
+REFERENCES Course(CourseCode)
+ON UPDATE CASCADE
+ON DELETE CASCADE,
+CONSTRAINT UserReadsThread_Email_FK FOREIGN KEY (Email)
+REFERENCES User(Email)
+ON UPDATE CASCADE
+ON DELETE CASCADE
+);
+
+CREATE TABLE Reply (
+ReplyID INT NOT NULL AUTO_INCREMENT,
+Email VARCHAR(50),
+Content VARCHAR(500),
+ThreadID INT NOT NULL,
+CourseCode VARCHAR(50) NOT NULL,
+Type VARCHAR(50) NOT NULL, 		/* Vi har full spessialisering og dermed kan ikke Type være NULL */
+CONSTRAINT Reply_PK PRIMARY KEY (ReplyID),
+CONSTRAINT Reply_Email_FK FOREIGN KEY (Email)
+REFERENCES User(Email)
+ON UPDATE CASCADE
+ON DELETE SET NULL, 	/* Dersom en bruker slettes vil svarene den har gitt ha forfatter lik NULL*/
+CONSTRAINT Reply_Thread_FK FOREIGN KEY (ThreadID)
+REFERENCES Thread(ThreadID)
+ON UPDATE CASCADE
+ON DELETE CASCADE, 
+CONSTRAINT Reply_CourseCode_FK FOREIGN KEY (CourseCode)
+REFERENCES Course(CourseCode)
+ON UPDATE CASCADE
+ON DELETE CASCADE
+);
+
+CREATE TABLE CommentRegards (
+CommentID INT NOT NULL,
+DiscussionID INT NOT NULL,
+CONSTRAINT CommentRegards_PK PRIMARY KEY (CommentID, DiscussionID),
+CONSTRAINT CommentRegards_CommentID_FK FOREIGN KEY (CommentID)
+REFERENCES Reply(ReplyID)
+ON UPDATE CASCADE
+ON DELETE CASCADE, 
+CONSTRAINT CommentRegards_DiscussionID_FK FOREIGN KEY (DiscussionID)
+REFERENCES Reply(ReplyID)
+ON UPDATE CASCADE
+ON DELETE CASCADE
+);
+
+INSERT INTO user VALUES ('jakob.torsvik@example.com', 'Jakob Martin Torsvik', 'DenErBrun');
+INSERT INTO user VALUES ('tord.softeland@example.com', 'Tord Søfteland', 'Nais');
+INSERT INTO user VALUES ('martinus.bjørge@example.com', 'Martinus Amadeus Bjørge', 'DetErRogert');
+
+INSERT INTO course VALUES ('TDT4145', 'Datamodellering og databasesystemer', 'Vår 2021', false);
+INSERT INTO course VALUES ('TDT4140', 'Programvareutvikling', 'Vår 2021', true);
+
+INSERT INTO userincourse VALUES ('jakob.torsvik@example.com', 'TDT4145', 'Student');
+INSERT INTO userincourse VALUES ('tord.softeland@example.com', 'TDT4145', 'Student');
+INSERT INTO userincourse VALUES ('martinus.bjørge@example.com', 'TDT4145', 'Instructor');
+INSERT INTO userincourse VALUES ('martinus.bjørge@example.com', 'TDT4140', 'Instructor');
+
+INSERT INTO folder(FolderID, CourseCode, Name, ParentID) VALUES(1, 'TDT4145', 'Exam', NULL);
+INSERT INTO folder(FolderID, CourseCode, Name, ParentID) VALUES(2, 'TDT4145', 'Øving1', NULL);
+
+INSERT INTO Thread(ThreadID, CourseCode, Content, Email, FolderID) VALUES(1, 'TDT4145', 'Jeg lurer på når eksamen er?', 'jakob.torsvik@example.com', 1);
+INSERT INTO Thread(ThreadID, CourseCode, Content, Email, FolderID) VALUES(2, 'TDT4145', 'Hvordan fungerer svake klasser?', 'jakob.torsvik@example.com', 2);
+
+INSERT INTO ThreadTags(ThreadID, CourseCode, Tag) VALUES(2, 'TDT4145', 'Svake klasser');
+
+INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(2, 'TDT4145', 'tord.softeland@example.com', true);
+INSERT INTO userreadsthread(ThreadID, CourseCode, Email, Likes) VALUES(1, 'TDT4145', 'tord.softeland@example.com', false);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (1, 1, 'TDT4145', NULL,
+'StudentsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (2, 1, 'TDT4145', NULL,
+'InstructorsAnswer', NULL);
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (3, 2, 'TDT4145', 'tord.softeland@example.com',
+'StudentsAnswer', 'Vet ikke helt');
+
+INSERT INTO reply(ReplyID, ThreadID, CourseCode, Email, Type, Content) VALUES (4, 2, 'TDT4145', NULL,
+'InstructorsAnswer', NULL);

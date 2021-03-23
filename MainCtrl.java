@@ -255,14 +255,19 @@ public class MainCtrl implements Runnable {
 		System.out.print("Search for: ");
 		String search = sc.nextLine();
 		try {
-			String query = "SELECT ThreadID FROM thread"
-			 + " where CourseCode=(?) and LOWER(thread.Content) like (?);";
+			String query = "SELECT ThreadID as ThreadOrReplyID, content FROM thread"
+			 + " where CourseCode=(?) and LOWER(thread.Content) like LOWER((?))"
+			 + " UNION"
+			 + " SELECT ThreadID, content FROM reply"
+			 + " where CourseCode=(?) and LOWER(reply.Content) like LOWER((?));";
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, courseCode);
 			st.setString(2, "%"+ search + "%");
+			st.setString(3, courseCode);
+			st.setString(4, "%"+ search + "%");
 			System.out.println(st);
 			ResultSet rs = st.executeQuery();
-			System.out.println("Search Results - IDs of Threads with keyword: \n");
+			System.out.println("Search Results - IDs of Threads or replies with keyword: \n");
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int columnsNumber = rsmd.getColumnCount();
 			while (rs.next()) {
@@ -393,7 +398,7 @@ public class MainCtrl implements Runnable {
 		}
 
 		
-		if (yesNoInput("Would you like to seach for a thread with a given keyword?")) {
+		if (yesNoInput("Would you like to seach for a post (thread or reply) with a given keyword?")) {
 				searchForThread();
 		}
 

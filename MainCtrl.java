@@ -20,7 +20,7 @@ public class MainCtrl implements Runnable {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Properties p = new Properties();
 			p.put("user", "root");
-			p.put("password", "toor");
+			p.put("password", "LiteKreativtPass0rd");
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://localhost:3306/prosjekt?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false&serverTimezone=UTC",
 					p);
@@ -93,6 +93,8 @@ public class MainCtrl implements Runnable {
 		// Initialize active course and view its folders
 		Course course = new Course(courseCode);
 		course.initialize(conn);
+		System.out.println("");
+		System.out.print("Folders in " + courseCode + ":");
 		course.viewFolders(conn);
 
 		// Ask for user input on the folderID of the folder to view
@@ -248,6 +250,36 @@ public class MainCtrl implements Runnable {
 		System.out.println("Reply given to Thread " + threadID);
 	}
 
+	private void searchForThread() {
+		// Take user input to seach for
+		System.out.print("Search for: ");
+		String search = sc.nextLine();
+		try {
+			String query = "SELECT ThreadID FROM thread"
+			 + " where CourseCode=(?) and LOWER(thread.Content) like (?);";
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, courseCode);
+			st.setString(2, "%"+ search + "%");
+			System.out.println(st);
+			ResultSet rs = st.executeQuery();
+			System.out.println("Search Results - IDs of Threads with keyword: \n");
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int columnsNumber = rsmd.getColumnCount();
+			while (rs.next()) {
+				for (int i = 1; i <= columnsNumber; i++) {
+					if (i > 1) {
+						System.out.print(",  ");
+					}
+					String columnValue = rs.getString(i);
+					System.out.print(rsmd.getColumnName(i) + ": " +  columnValue );
+				}
+				System.out.println("\n");
+			}
+		} catch (Exception e) {
+			System.out.println("Error while retriving statistics " + e);
+		}
+	}
+
 	/**
 	 * Prints out statistics on user activity
 	 */
@@ -267,8 +299,8 @@ public class MainCtrl implements Runnable {
 		 * st.executeQuery(); System.out.println("Statistics:"); ResultSetMetaData rsmd
 		 * = rs.getMetaData(); int columnsNumber = rsmd.getColumnCount(); while
 		 * (rs.next()) { for (int i = 1; i <= columnsNumber; i++) { if (i > 1) {
-		 * System.out.print(",  "); // LUREST Å ALLTID BRUKE BRACKETS SELV NÅR MAN IKKE
-		 * TRENGER // ETTERSOM DET GJØR DET MER SIKKERT Å DEBUGGE I ETTERKANT } String
+		 * System.out.print(",  "); // LUREST ï¿½ ALLTID BRUKE BRACKETS SELV Nï¿½R MAN IKKE
+		 * TRENGER // ETTERSOM DET GJï¿½R DET MER SIKKERT ï¿½ DEBUGGE I ETTERKANT } String
 		 * columnValue = rs.getString(i); System.out.print(columnValue + " " +
 		 * rsmd.getColumnName(i)); } System.out.println("\n"); } } catch (Exception e) {
 		 * System.out.println("Error while retriving statistics " + e); } break; } else
@@ -277,16 +309,21 @@ public class MainCtrl implements Runnable {
 		 * System.out.print("Please try again: "); answer = sc.nextLine(); } }
 		 */
 
-		// HAR FLYTTET SPØRRINGEN TIL run()
+		// HAR FLYTTET SPï¿½RRINGEN TIL run()
 
 		try {
 			String query = "SELECT A.Email, ThreadsRead, ThreadsCreated"
-					+ " FROM (SELECT Email, count(userreads.ThreadID) as ThreadsRead"
-					+ " FROM user LEFT OUTER JOIN userreadsthread as userreads USING(Email)"
-					+ " group by Email order by ThreadsRead desc) AS A"
-					+ " LEFT OUTER JOIN (SELECT Email, count(ThreadID) as ThreadsCreated"
-					+ " FROM thread group by thread.Email) AS B" + " ON A.Email=B.Email;";
+				+ " FROM (SELECT Email, count(userreads.ThreadID) as ThreadsRead"
+						+ " FROM user LEFT OUTER JOIN userreadsthread as userreads USING(Email)"
+						+ " where userreads.CourseCode=(?)"
+						+ " group by Email order by ThreadsRead desc) AS A"
+				+ " LEFT OUTER JOIN (SELECT Email, count(ThreadID) as ThreadsCreated"
+					+ " FROM thread where thread.CourseCode=(?)" 
+					+ " group by thread.Email) AS B"
+				+ " ON A.Email=B.Email;";
 			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, courseCode);
+			st.setString(2, courseCode);
 			ResultSet rs = st.executeQuery();
 			System.out.println("Statistics:");
 			ResultSetMetaData rsmd = rs.getMetaData();
@@ -294,11 +331,10 @@ public class MainCtrl implements Runnable {
 			while (rs.next()) {
 				for (int i = 1; i <= columnsNumber; i++) {
 					if (i > 1) {
-						System.out.print(",  "); // LUREST Å ALLTID BRUKE BRACKETS SELV NÅR MAN IKKE TRENGER
-													// ETTERSOM DET GJØR DET MER SIKKERT Å DEBUGGE I ETTERKANT
+						System.out.print(",  ");
 					}
 					String columnValue = rs.getString(i);
-					System.out.print(columnValue + " " + rsmd.getColumnName(i));
+					System.out.print(rsmd.getColumnName(i) + ": " +  columnValue );
 				}
 				System.out.println("\n");
 			}
@@ -306,6 +342,7 @@ public class MainCtrl implements Runnable {
 			System.out.println("Error while retriving statistics " + e);
 		}
 	}
+
 
 	private boolean yesNoInput(String question) {
 		boolean result = false;
@@ -342,23 +379,23 @@ public class MainCtrl implements Runnable {
 			successfull_login = logIn();
 		}
 
-		// Option to view statistics
-		if (yesNoInput("Would you like to see statistics for how many posts users have created and read?")) {
-			viewStatistics();
-		}
-
 		// Selection of course
 		courseSelection();
 
-		// BURDE IKKE DET EGENTLIG GJØRES PÅ DENNE MÅTEN? ER DET IKKE KUN INSTRUCTORS
-		// SOM KAN SE STATISTIKK? OG ER DET IKKE I SÅ TILFELLE KUN INNAD I DET COURSET
-		// HVOR DE ER INSTRUCTOR?
-//		// Instructors may view statistics
-//		User user = new User(userEmail);
-//		user.initialize(conn);
-//		if (user.roleInCourse(courseCode, conn).equals("Instructor")) {
-//			viewStatistics();
-//		}
+		// Assumes only instructors have permission to view statistics
+		User user = new User(userEmail);
+		user.initialize(conn);
+
+		if (user.roleInCourse(courseCode, conn).equals("Instructor")) {
+			if (yesNoInput("Would you like to see statistics for how many posts users have created and read?")) {
+					viewStatistics();
+				}
+		}
+
+		
+		if (yesNoInput("Would you like to seach for a thread with a given keyword?")) {
+				searchForThread();
+		}
 
 		// Selection of folder
 		folderSelection();

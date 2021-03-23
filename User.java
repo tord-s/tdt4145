@@ -107,12 +107,4 @@ public class User extends ActiveDomainObject {
 		return null;
 	}
 
-	public String getEmail() {
-		return email;
-	}
-
-	public String getName() {
-		return name;
-	}
-
 }

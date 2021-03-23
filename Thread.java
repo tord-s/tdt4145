@@ -158,26 +158,6 @@ public class Thread extends ActiveDomainObject {
 		return 0;
 	}
 
-	public int getThreadID() {
-		return threadID;
-	}
-
-	public String getCourseCode() {
-		return courseCode;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public int getFolderID() {
-		return folderID;
-	}
-
 	public int getStudAnsID() {
 		return studAnsID;
 	}

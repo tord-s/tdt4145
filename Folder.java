@@ -104,24 +104,7 @@ public class Folder extends ActiveDomainObject {
 		}
 	}
 
-	public int getFolderID() {
-		return folderID;
-	}
-
-	public String getCourseCode() {
-		return courseCode;
-	}
-
 	public String getName() {
 		return name;
 	}
-
-	public int getParentID() {
-		return parentID;
-	}
-
-	public List<Integer> getThreadIDs() {
-		return threadIDs;
-	}
-
 }

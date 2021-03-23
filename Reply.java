@@ -103,27 +103,8 @@ public class Reply extends ActiveDomainObject {
 		}
 	}
 
-	public int getReplyID() {
-		return replyID;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
 	public String getContent() {
 		return content;
 	}
 
-	public int getThreadID() {
-		return threadID;
-	}
-
-	public String getCourseCode() {
-		return courseCode;
-	}
-
-	public String getType() {
-		return type;
-	}
 }

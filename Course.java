@@ -162,35 +162,11 @@ public class Course extends ActiveDomainObject {
 		}
 	}
 
-	public String getCourseCode() {
-		return courseCode;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getTerm() {
-		return term;
-	}
-
 	public boolean allowsAnonymous() {
 		return (allowAnonymous == 1);
 	}
 
 	public List<Integer> getThreadIDs() {
 		return threadIDs;
-	}
-
-	public List<Integer> getFolderIDs() {
-		return folderIDs;
-	}
-
-	public List<String> getStudentEmails() {
-		return studentEmails;
-	}
-
-	public List<String> getInstructorEmails() {
-		return instructorEmails;
 	}
 }

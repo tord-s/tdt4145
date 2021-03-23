@@ -50,7 +50,7 @@ public class MainCtrl implements Runnable {
 		}
 
 		// Option to search for posts containing a specific user input keyword
-		if (yesNoInput("Would you like to seach for a thread with a given keyword?")) {
+		if (yesNoInput("Would you like to search for a thread with a given keyword?")) {
 			searchForPost();
 		}
 
@@ -64,10 +64,15 @@ public class MainCtrl implements Runnable {
 		String browseOrPost = sc.nextLine();
 		while (true) {
 			if (browseOrPost.equals("browse")) {
+				// Selection of thread
 				threadSelection();
+				
+				// Show thread in console
 				Thread thread = new Thread(threadID, courseCode);
 				thread.initialize(conn);
 				thread.view(conn);
+				
+				// Option to like and reply
 				userReadsThread();
 				break;
 			} else if (browseOrPost.equals("post")) {
@@ -333,16 +338,19 @@ public class MainCtrl implements Runnable {
 	private void searchForPost() {
 		// Take user input to search for
 		System.out.print("Search for: ");
-		String search = sc.nextLine();
+		String keyword = sc.nextLine();
 		try {
+			// Get threads containing keyword
 			String query = "SELECT ThreadID FROM thread" + " where CourseCode=(?) and LOWER(thread.Content) like (?);";
 			PreparedStatement st = conn.prepareStatement(query);
 			st.setString(1, courseCode);
-			st.setString(2, "%" + search + "%");
+			st.setString(2, "%" + keyword + "%");
 			ResultSet rs = st.executeQuery();
-			System.out.println("Search Results - IDs of Posts with keyword: \n");
+			
+			// Print out the threads from search result
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int columnsNumber = rsmd.getColumnCount();
+			System.out.println("Search Results - IDs of Posts with keyword: \n");
 			while (rs.next()) {
 				for (int i = 1; i <= columnsNumber; i++) {
 					if (i > 1) {
@@ -409,11 +417,10 @@ public class MainCtrl implements Runnable {
 				break;
 			} else if (answer.equals("n") || answer.equals("no")) {
 				break;
-			} else {
-				System.out.println(answer + " is not a valid input");
-				System.out.print("Please try again: ");
-				answer = sc.nextLine();
 			}
+			System.out.println(answer + " is not a valid input");
+			System.out.print("Please try again: ");
+			answer = sc.nextLine();
 		}
 		return result;
 	}

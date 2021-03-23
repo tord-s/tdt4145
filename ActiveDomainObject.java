@@ -8,10 +8,6 @@ public abstract class ActiveDomainObject {
 	 */
 	public abstract void initialize(Connection conn);
 
-	public void refresh(Connection conn) {
-		initialize(conn);
-	}
-
 	/**
 	 * Saves the object to the database as an entity
 	 * 

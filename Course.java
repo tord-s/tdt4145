@@ -2,6 +2,13 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 
+ * @author Bjørge, Martinus
+ * @author Søfteland, Tord Østensen
+ * @author Torsvik, Jakob Martin
+ *
+ */
 public class Course extends ActiveDomainObject {
 	private String courseCode;
 	private String name;

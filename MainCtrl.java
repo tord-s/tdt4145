@@ -4,6 +4,14 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
+/**
+ * 
+ * 
+ * @author Bjørge, Martinus
+ * @author Søfteland, Tord Østensen
+ * @author Torsvik, Jakob Martin
+ *
+ */
 public class MainCtrl implements Runnable {
 	private String userEmail; // Active user
 	private String courseCode; // Active course

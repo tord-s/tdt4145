@@ -2,6 +2,13 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 
+ * @author Bjørge, Martinus
+ * @author Søfteland, Tord Østensen
+ * @author Torsvik, Jakob Martin
+ *
+ */
 public class Folder extends ActiveDomainObject {
 	private int folderID;
 	private String courseCode;

@@ -1,5 +1,12 @@
 import java.sql.*;
 
+/**
+ * 
+ * @author Bjørge, Martinus
+ * @author Søfteland, Tord Østensen
+ * @author Torsvik, Jakob Martin
+ *
+ */
 public class Reply extends ActiveDomainObject {
 	private int replyID;
 	private String email;

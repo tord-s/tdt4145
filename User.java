@@ -1,6 +1,7 @@
 import java.sql.*;
 
 /**
+ * Represents an entry in the user table
  * 
  * @author Bjørge, Martinus
  * @author Søfteland, Tord Østensen

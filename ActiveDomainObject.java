@@ -1,5 +1,13 @@
 import java.sql.*;
 
+/**
+ * Represents an entry in a database table
+ * 
+ * @author Bjørge, Martinus
+ * @author Søfteland, Tord Østensen
+ * @author Torsvik, Jakob Martin
+ *
+ */
 public abstract class ActiveDomainObject {
 	/**
 	 * Retrieves entity-information from the database

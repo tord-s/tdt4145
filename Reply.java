@@ -1,6 +1,7 @@
 import java.sql.*;
 
 /**
+ * Represents an entry in the reply table
  * 
  * @author Bjørge, Martinus
  * @author Søfteland, Tord Østensen

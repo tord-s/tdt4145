@@ -5,7 +5,7 @@ import java.util.Properties;
 import java.util.Scanner;
 
 /**
- * 
+ * Main class for the database-application. Takes most of the user input and launches the application when run
  * 
  * @author Bjørge, Martinus
  * @author Søfteland, Tord Østensen

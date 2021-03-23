@@ -3,6 +3,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * Represents an entry in the folder table
  * 
  * @author Bjørge, Martinus
  * @author Søfteland, Tord Østensen

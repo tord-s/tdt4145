@@ -5,8 +5,8 @@ import java.util.List;
 /**
  * Represents an entry in the course table
  * 
- * @author Bjørge, Martinus
- * @author Søfteland, Tord Østensen
+ * @author Bjï¿½rge, Martinus
+ * @author Sï¿½fteland, Tord ï¿½stensen
  * @author Torsvik, Jakob Martin
  *
  */
@@ -137,7 +137,7 @@ public class Course extends ActiveDomainObject {
 	/**
 	 * Checks if course has instructor
 	 * 
-	 * @param studentEmail Email of instructor
+	 * @param instructorEmail Email of instructor
 	 * @return True if course has instructor
 	 */
 	public boolean hasInstructor(String instructorEmail) {

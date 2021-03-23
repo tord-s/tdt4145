@@ -3,8 +3,8 @@ import java.sql.*;
 /**
  * Represents an entry in the reply table
  * 
- * @author Bjørge, Martinus
- * @author Søfteland, Tord Østensen
+ * @author Bjï¿½rge, Martinus
+ * @author Sï¿½fteland, Tord ï¿½stensen
  * @author Torsvik, Jakob Martin
  *
  */
@@ -41,6 +41,7 @@ public class Reply extends ActiveDomainObject {
 		this.content = content;
 		this.threadID = threadID;
 		this.courseCode = courseCode;
+		// Check valid type
 		if (!type.equals("StudentsAnswer") && !type.equals("InstructorsAnswer")) {
 			throw new Exception("Type must be either 'StudentsAnswer' or 'InstructorsAnswer'");
 		}
@@ -94,6 +95,7 @@ public class Reply extends ActiveDomainObject {
 	 * Prints out content and author of reply to console
 	 */
 	public void view() {
+		//Checks type of reply
 		if (type.equals("StudentsAnswer")) {
 			System.out.println("\n	Student's answer:");
 		} else if (type.equals("InstructorsAnswer")) {
@@ -102,6 +104,7 @@ public class Reply extends ActiveDomainObject {
 		if (content != null) {
 			System.out.println("	" + content);
 			System.out.print("	Answered by: ");
+			// Prints out author of reply, or Anonymous if null
 			if (email != null) {
 				System.out.print(email);
 			} else {
